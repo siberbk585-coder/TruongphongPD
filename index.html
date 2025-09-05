@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Module Duyệt Báo Cáo - Trưởng Phòng</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary-blue': '#5aa9ff',
+            'muted': '#f8fafc',
+            'ink': '#0b1324'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    .spinner{border:2px solid #e5e7eb;border-top:2px solid #3b82f6;border-radius:50%;width:16px;height:16px;animation:spin 1s linear infinite;display:inline-block;vertical-align:middle}
+    @keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+    .header-container{background:linear-gradient(135deg,#2563eb 0%,#60a5fa 100%);position:relative;overflow:hidden}
+    .header-container::before{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.08' fill-rule='evenodd'/%3E%3C/svg%3E");opacity:.4}
+    .modal{position:fixed;inset:0;background:rgba(15,23,42,0.35);display:none;align-items:center;justify-content:center;padding:20px;z-index:1000}
+    .modal.open{display:flex}
+    .toast{position:fixed;right:16px;bottom:16px;background:#0b1324;color:#fff;padding:10px 12px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.15);opacity:0;transform:translateY(10px);transition:.2s}
+    .toast.show{opacity:1;transform:translateY(0)}
+    .table-zebra tbody tr:nth-child(even){ background-color:#f8fafc; }
+    .table-vdiv{ border-collapse: separate; border-spacing: 0; }
+    .table-vdiv th+th, .table-vdiv td+td{ border-left:1px solid #e5e7eb; }
+    .submit-btn{background:linear-gradient(135deg,#3b82f6 0%,#60a5fa 100%);box-shadow:0 4px 6px rgba(37,99,235,.1),0 1px 3px rgba(37,99,235,.08);transition:transform .2s ease,box-shadow .2s ease,opacity .2s ease,filter .2s ease;border-radius:9999px;position:relative}
+    .submit-btn:hover{transform:translateY(-1px);box-shadow:0 7px 14px rgba(37,99,235,.12),0 3px 6px rgba(37,99,235,.08);filter:brightness(1.03)}
+    .submit-btn:active{transform:translateY(0);opacity:.95}
+    .badge{background:rgba(90,169,255,.15);color:#1e40af;border:1px solid rgba(90,169,255,.35);padding:2px 8px;border-radius:9999px;font-size:12px;font-weight:600}
+  </style>
+</head>
+<body class="bg-muted min-h-screen text-gray-800" style="font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'">
+  <header class="header-container w-full">
+    <div class="relative z-10 w-full p-8 md:p-10">
+      <div class="flex items-center space-x-2 mb-3">
+        <div class="inline-block px-3 py-1 rounded-full text-xs font-semibold text-white" style="background-color: rgba(255,255,255,0.15); backdrop-filter: blur(5px);">Trưởng phòng</div>
+      </div>
+      <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-1 tracking-tight">Module Duyệt Báo Cáo</h1>
+      <p class="text-blue-100 text-sm md:text-base">Dành cho trưởng phòng DQA.</p>
+    </div>
+  </header>
+
+  <main class="w-full p-4 md:p-6">
+    <div class="mb-4 flex items-center gap-2 flex-wrap">
+      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form-approve">Duyệt báo cáo</button>
+      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form3">Giao việc - In progress</button>
+      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form4">Bảng theo dõi-In progress</button>
+      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form5">Tất cả tác vụ-In progress</button>
+    </div>
+    <section id="form-approve" class="bg-white p-4 md:p-6 rounded-xl shadow-md">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-blue-800">Danh sách báo cáo chờ duyệt</h2>
+        <div class="flex items-center gap-2 text-xs text-gray-500">
+          <button id="btn-debug" class="px-2 py-0.5 rounded border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100">Debug</button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
+        <div class="md:col-span-3">
+          <label class="block text-sm text-gray-700 mb-1">Từ khóa</label>
+          <input id="flt-q" type="text" placeholder="Mã/tiêu đề/người lập" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm text-gray-700 mb-1">Trạng thái</label>
+          <select id="flt-status" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white">
+            <option value="Pending" selected>Chờ phê duyệt</option>
+            <option value="Approved">Done</option>
+            <option value="TestBen">Test bền</option>
+            <option value="ChangesRequested">Đang sửa</option>
+            <option value="All">Tất cả</option>
+          </select>
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm text-gray-700 mb-1">Từ ngày</label>
+          <input id="flt-from" type="date" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm text-gray-700 mb-1">Đến ngày</label>
+          <input id="flt-to" type="date" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white" />
+        </div>
+        <div class="md:col-span-3 flex items-end gap-2">
+          <div class="flex items-center gap-2">
+            <label class="text-xs text-gray-600">Chế độ</label>
+            <select id="flt-mode" class="border border-blue-200 rounded bg-white text-sm px-2 py-1">
+              <option value="All" selected>Tất cả</option>
+              <option value="Day">Ngày</option>
+              <option value="Week">Tuần</option>
+              <option value="Month">Tháng</option>
+            </select>
+          </div>
+          <button id="btn-search" class="submit-btn px-4 py-2 text-white font-semibold">Tra cứu</button>
+          <button id="btn-reset" class="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Xóa lọc</button>
+        </div>
+      </div>
+
+      <div id="debug-panel" class="mt-2 p-2 border border-amber-300 rounded bg-amber-50 text-xs" style="display:none">
+        <div class="font-semibold mb-1">Debug API</div>
+        <div class="mb-1">URL: <span id="dbg-url" class="break-all"></span></div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div>
+            <div class="text-gray-600 mb-1">Response (raw)</div>
+            <textarea id="dbg-raw" class="w-full h-40 border rounded p-1"></textarea>
+          </div>
+          <div>
+            <div class="text-gray-600 mb-1">First row (normalized)</div>
+            <textarea id="dbg-row" class="w-full h-40 border rounded p-1"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-2 overflow-auto border border-gray-200 rounded-lg">
+        <table class="min-w-[1100px] w-full text-sm table-zebra table-vdiv">
+          <thead class="bg-gradient-to-r from-blue-100 to-blue-50 sticky top-0">
+            <tr class="text-left text-gray-700">
+              <th class="px-3 py-2 min-w-[120px]">Mã báo cáo</th>
+              <th class="px-3 py-2 min-w-[260px]">Tiêu đề</th>
+              <th class="px-3 py-2 min-w-[160px]">Người lập</th>
+              <th class="px-3 py-2 min-w-[140px]">Ngày nộp</th>
+              <th class="px-3 py-2 min-w-[140px]">Hạn mong muốn</th>
+              <th class="px-3 py-2 min-w-[140px]">Hạn đánh giá</th>
+              <th class="px-3 py-2 min-w-[120px]">Trạng thái</th>
+              <th class="px-3 py-2 min-w-[220px]">Hành động</th>
+            </tr>
+          </thead>
+          <tbody id="list-body" class="divide-y divide-gray-100">
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="7">Chưa có dữ liệu</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="pager" class="mt-2 flex items-center justify-between" style="display:none">
+        <div class="text-sm text-gray-600">
+          <span id="page-info">Trang 1/1 (0 dòng)</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-600">Hiển thị</label>
+          <select id="page-size" class="border border-blue-300 rounded-lg bg-slate-100 p-1 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white">
+            <option value="10">10</option>
+            <option value="20" selected>20</option>
+            <option value="50">50</option>
+          </select>
+          <button id="prev" class="px-3 py-1 rounded-lg border border-gray-300 text-gray-700 bg-white hover:bg-gray-50">Trước</button>
+          <button id="next" class="px-3 py-1 rounded-lg text-white font-semibold bg-primary-blue hover:brightness-105">Sau</button>
+        </div>
+      </div>
+      <div class="mt-4 flex justify-end">
+        <a href="https://docs.google.com/spreadsheets/d/18tnDOM5LeY6aGyXlU-zg0WLyZ6X1CCUEPfjDbdynuJE/edit?gid=1019348205#gid=1019348205" target="_blank" rel="noopener" class="px-4 py-2 rounded-lg border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50">Lịch sử phê duyệt</a>
+      </div>
+    </section>
+
+    <!-- Form 3 · Giao việc (Mock + Webhook mapping) -->
+    <section id="form3" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
+      <div class="flex items-center justify-between mb-4">
+        <div class="section-title">
+          <h2 class="text-xl font-semibold text-blue-800">Giao việc</h2>
+          <span class="badge">Requester cố định: Vũ Duy Minh</span>
+        </div>
+      </div>
+      <form id="assign-form" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Người yêu cầu</label>
+            <input id="rq-by" required type="text" class="w-full border border-blue-300 rounded-lg bg-gray-200 p-2 text-gray-700" readonly/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Thời gian yêu cầu</label>
+            <input id="rq-time" readonly type="text" class="w-full border border-blue-300 rounded-lg bg-gray-200 p-2 text-gray-600"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email người yêu cầu</label>
+            <input id="rq-by-email" type="email" readonly class="w-full border border-blue-300 rounded-lg bg-gray-200 p-2 text-gray-600"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tên tác vụ <span class="text-gray-400 text-xs">(bắt buộc)</span></label>
+            <input id="task-name" required type="text" placeholder="Nhập tên tác vụ" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Người được giao <span class="text-gray-400 text-xs">(bắt buộc)</span></label>
+            <select id="f3-assignee" required class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white">
+              <option value="">— Chọn người —</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Công chuẩn <span class="text-gray-400 text-xs">(bắt buộc)</span></label>
+            <input id="man-hour" required type="number" step="0.01" min="0" inputmode="decimal" placeholder="VD: 12,5" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white"/>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Đầu ra công việc <span class="text-gray-400 text-xs">(bắt buộc)</span></label>
+            <input id="output" required type="text" placeholder="Mô tả đầu ra" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white"/>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
+            <input id="deadline" type="date" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Mã Odoo/Jira</label>
+            <input id="odoo-jira" type="text" placeholder="VD: ODOO-123 hoặc JIRA-456" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white"/>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tài liệu đính kèm</label>
+            <input id="attach" type="file" class="block w-full text-sm file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:bg-primary-blue file:text-white"/>
+            <div id="f3-upload-list" class="mt-2 text-sm"></div>
+          </div>
+        </div>
+        <div class="pt-2 flex items-center gap-3">
+          <button type="submit" class="submit-btn px-6 py-2 text-white font-semibold transition">Giao việc</button>
+        </div>
+      </form>
+    </section>
+    
+    <!-- Form 4 · Bảng theo dõi (Mock) -->
+    <section id="form4" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
+      <div class="flex items-center justify-between mb-4">
+        <div class="section-title">
+          <h2 class="text-xl font-semibold text-blue-800">Bảng theo dõi</h2>
+          <span class="badge">Mock</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-sm text-gray-700">Tháng</label>
+          <input id="f4-month" type="month" class="border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white"/>
+          <label class="text-xs text-gray-600">Chế độ</label>
+          <select id="f4-mode" class="border border-blue-200 rounded bg-white text-sm px-2 py-1">
+            <option value="All" selected>Tất cả</option>
+            <option value="Day">Ngày</option>
+            <option value="Week">Tuần</option>
+            <option value="Month">Tháng</option>
+          </select>
+          <button id="f4-search" class="submit-btn px-4 py-2 text-white font-semibold transition">Tra cứu</button>
+        </div>
+      </div>
+      <div class="mb-2 flex items-center gap-2 flex-wrap">
+        <button id="f4-btn-all" class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50">Tất cả thành viên</button>
+        <button id="f4-btn-linh" class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50">Nhóm Linh</button>
+        <button id="f4-btn-hieu" class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50">Nhóm Hiếu</button>
+      </div>
+      <div id="f4-main-doing" class="mt-4 overflow-auto max-h-[60vh] border border-gray-200 rounded-lg">
+        <table class="min-w-[480px] w-full text-sm">
+          <thead class="bg-gradient-to-r from-blue-100 to-blue-50 sticky top-0">
+            <tr class="text-left text-gray-700">
+              <th class="px-3 py-2">Nhân viên</th>
+              <th class="px-3 py-2">Công chuẩn hiện tại</th>
+              <th class="px-3 py-2">Số tác vụ</th>
+            </tr>
+          </thead>
+          <tbody id="f4-body" class="divide-y divide-gray-100">
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="3">Chưa có dữ liệu</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="f4-pivot-wrap" class="mt-4 overflow-auto border border-gray-200 rounded-lg">
+        <div class="flex items-center justify-between p-3">
+          <div class="text-sm text-gray-700">Bản tổng hợp quá hạn (từ dữ liệu mock báo cáo)</div>
+          <div class="flex items-center gap-2">
+            <button id="f4-pivot-refresh" class="px-3 py-1 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Làm mới</button>
+          </div>
+        </div>
+        <table id="f4-pivot-table" class="min-w-[760px] w-full text-sm">
+          <thead class="bg-gradient-to-r from-blue-100 to-blue-50">
+            <tr class="text-left text-gray-700">
+              <th class="px-3 py-2">Assignee</th>
+              <th class="px-3 py-2">Mã</th>
+              <th class="px-3 py-2">Tiêu đề</th>
+              <th class="px-3 py-2">Trạng thái</th>
+              <th class="px-3 py-2">Ngày nộp</th>
+              <th class="px-3 py-2">Hạn đánh giá</th>
+            </tr>
+          </thead>
+          <tbody id="f4-pivot-body" class="divide-y divide-gray-100">
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="6">Chưa có dữ liệu</td></tr>
+          </tbody>
+          <tfoot>
+            <tr class="bg-blue-50 font-semibold text-blue-900">
+              <td class="px-3 py-2" colspan="5">Tổng số quá hạn:</td>
+              <td class="px-3 py-2" id="f4-pivot-sum-total">0</td>
+            </tr>
+          </tfoot>
+        </table>
+        <div class="p-2 text-xs text-gray-500" id="f4-pivot-note"></div>
+      </div>
+      <div id="f4-chart-container" class="mt-4 h-80" style="display:none">
+        <canvas id="f4-chart"></canvas>
+      </div>
+    </section>
+
+    <!-- Form 5 · Tất cả tác vụ (Mock) -->
+    <section id="form5" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold text-blue-800">Tất cả tác vụ</h2>
+      </div>
+      <div class="mt-2 overflow-auto border border-gray-200 rounded-lg">
+        <div class="flex items-center gap-2 p-2">
+          <label class="text-sm text-gray-700">Tháng</label>
+          <input id="f5a-month" type="month" class="border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white"/>
+          <button id="f5a-search" class="submit-btn px-4 py-2 text-white font-semibold transition">Tra cứu</button>
+          <label class="text-xs text-gray-600">Chế độ</label>
+          <select id="f5f-mode" class="border border-blue-200 rounded bg-white text-sm px-2 py-1">
+            <option value="All" selected>Tất cả</option>
+            <option value="Day">Ngày</option>
+            <option value="Week">Tuần</option>
+            <option value="Month">Tháng</option>
+          </select>
+          <label class="text-xs text-gray-600">Chế độ</label>
+          <select id="f5a-mode" class="border border-blue-200 rounded bg-white text-sm px-2 py-1">
+            <option value="vertical">Cột chồng dọc</option>
+            <option value="horizontal">Cột ngang</option>
+          </select>
+        </div>
+        <table class="min-w-[1100px] w-full text-sm table-zebra table-vdiv">
+          <thead class="bg-gradient-to-r from-blue-100 to-blue-50 sticky top-0">
+            <tr class="text-left text-gray-700">
+              <th class="px-3 py-2">Nhân viên</th>
+              <th class="px-3 py-2">Công chuẩn hiện tại</th>
+              <th class="px-3 py-2 cell-div">Công chuẩn cần nhận</th>
+              <th class="px-3 py-2">Số tác vụ trong tháng</th>
+              <th class="px-3 py-2">Số DONE</th>
+              <th class="px-3 py-2">Vượt tiến độ</th>
+              <th class="px-3 py-2">Đúng tiến độ</th>
+              <th class="px-3 py-2">Chậm tiến độ</th>
+              <th class="px-3 py-2">Tỷ lệ vượt (%)</th>
+              <th class="px-3 py-2">Tỷ lệ đúng (%)</th>
+              <th class="px-3 py-2">Tỷ lệ chậm (%)</th>
+            </tr>
+          </thead>
+          <tbody id="f5a-body" class="divide-y divide-gray-100">
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="11">Chưa có dữ liệu</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="f5a-chart-container" class="mt-4 h-96" style="display:none">
+        <canvas id="f5a-chart"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Approve -->
+  <div id="modal-approve" class="modal" aria-hidden="true">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-4">
+      <h3 class="text-lg font-semibold text-blue-800 mb-1">Duyệt báo cáo</h3>
+      <p class="text-sm text-gray-600 mb-3">Nhập bình luận (không bắt buộc)</p>
+      <textarea id="approve-comment" rows="4" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white" placeholder="Ghi chú cho người lập..."></textarea>
+      <div class="mt-3 flex items-center justify-end gap-2">
+        <button data-close="modal-approve" class="px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Hủy</button>
+        <button id="approve-do" class="submit-btn px-4 py-2 text-white font-semibold">Xác nhận duyệt</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Reject -->
+  <div id="modal-reject" class="modal" aria-hidden="true">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-4">
+      <h3 class="text-lg font-semibold text-red-700 mb-1">Từ chối báo cáo</h3>
+      <p class="text-sm text-gray-600 mb-3">Vui lòng nêu lý do</p>
+      <textarea id="reject-reason" rows="4" class="w-full border border-red-300 rounded-lg bg-red-50 p-2 focus:outline-none focus:ring-2 focus:ring-red-200 focus:bg-white" placeholder="Lý do từ chối..."></textarea>
+      <div class="mt-3 flex items-center justify-end gap-2">
+        <button data-close="modal-reject" class="px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Hủy</button>
+        <button id="reject-do" class="px-4 py-2 rounded-full text-white font-semibold" style="background:#ef4444">Xác nhận từ chối</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Request Changes -->
+  <div id="modal-req" class="modal" aria-hidden="true">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-4">
+      <h3 class="text-lg font-semibold text-amber-700 mb-1">Yêu cầu bổ sung</h3>
+      <div class="mb-3">
+        <label class="block text-sm text-gray-700 mb-1">Bình luận yêu cầu</label>
+        <textarea id="req-comment" rows="4" class="w-full border border-amber-300 rounded-lg bg-amber-50 p-2 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:bg-white" placeholder="Nội dung cần bổ sung..."></textarea>
+      </div>
+      <div class="mb-3">
+        <label class="block text-sm text-gray-700 mb-1">Hạn bổ sung (không bắt buộc)</label>
+        <input id="req-due" type="date" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white" />
+      </div>
+      <div class="mt-3 flex items-center justify-end gap-2">
+        <button data-close="modal-req" class="px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Hủy</button>
+        <button id="req-do" class="px-4 py-2 rounded-full text-white font-semibold" style="background:#f59e0b">Gửi yêu cầu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Report Preview -->
+  <div id="modal-report" class="modal" aria-hidden="true">
+    <div class="w-full max-w-5xl bg-white rounded-xl shadow-lg p-0 overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-2 border-b">
+        <div class="text-sm text-gray-700">Xem báo cáo: <span id="report-title" class="font-semibold"></span></div>
+        <div class="flex items-center gap-2">
+          <a id="report-open-new" href="#" target="_blank" class="text-primary-blue text-sm underline">Mở tab mới</a>
+          <button data-close="modal-report" class="px-3 py-1 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Đóng</button>
+        </div>
+      </div>
+      <div class="h-[70vh]">
+        <iframe id="report-frame" src="about:blank" class="w-full h-full" title="Report preview"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Task Detail -->
+  <div id="modal-task" class="modal" aria-hidden="true">
+    <div class="w-full max-w-3xl bg-white rounded-xl shadow-lg p-0 overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-2 border-b">
+        <div class="text-sm text-gray-700">Chi tiết tác vụ: <span id="task-title" class="font-semibold"></span></div>
+        <div class="flex items-center gap-2">
+          <a id="task-open-new" href="#" target="_blank" class="text-primary-blue text-sm underline">Mở tab mới</a>
+          <button data-close="modal-task" class="px-3 py-1 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Đóng</button>
+        </div>
+      </div>
+      <div class="p-4 text-sm" id="task-content">Đang tải...</div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // ===== Config (đổi sang endpoint thật khi sẵn sàng)
+    const WEBHOOK_TEST = 'https://iatzhxxuk.tino.page/webhook/1df40252-6bff-4392-bb1a-5ae72ee748d1';
+    const WEBHOOK_PROD = WEBHOOK_TEST.replace('/webhook-test/','/webhook/');
+    const REPORTS_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/1df40252-6bff-4392-bb1a-5ae72ee748d1'; // GET: action=reports_query
+    const FORM5_LIST_URL = WEBHOOK_TEST;    // GET: action=form5_list | form5_all | form5_all_stats
+    const FORM_ACTION_URL = 'https://iatzhxxuk.tino.page/webhook/f27938ca-886e-429a-af40-c27a96964920';   // POST: action=report_approve|report_reject|report_request_changes
+    const FORM3_ENDPOINT = 'https://iatzhxxuk.tino.page/webhook/21b742a9-a6b0-4393-9325-bfa470db5917'; // POST: form3_assign
+    // Đồng bộ endpoint theo "Nội bộ 28.8.html"
+    const FORM4_LOOKUP_URL = 'https://iatzhxxuk.tino.page/webhook/ddc1264c-85be-4b63-98a6-267103685117'; // action=form1_lookup
+    const FORM5_STATS_URL = 'https://iatzhxxuk.tino.page/webhook/4744d882-be8d-4939-a516-9229ba7dc87a';   // action=form5_all_stats
+
+    // ===== State
+    let ALL_ITEMS = [];
+    let FILTERED = [];
+    let CURRENT_PAGE = 1;
+    let PAGE_SIZE = 20;
+    let CURRENT_ITEM_ID = null;
+    let CURRENT_ACTION = null; // 'approve' | 'reject' | 'request'
+    let F5A_CHART = null; let F5A_MODE = 'vertical'; let F5A_LAST_ROWS = [];
+
+    // ===== Helpers
+    function showToast(message, type){
+      const el = document.getElementById('toast'); if (!el) return;
+      el.textContent = String(message||'');
+      el.style.background = type==='error' ? '#b91c1c' : '#0b1324';
+      el.classList.add('show');
+      setTimeout(()=> el.classList.remove('show'), 2200);
+    }
+    function generateQaPdCode(){
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const dd = String(d.getDate()).padStart(2,'0');
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+      let suffix = '';
+      for (let i=0; i<6; i++){ suffix += chars.charAt(Math.floor(Math.random()*chars.length)); }
+      return `QA.PD.${yyyy}${mm}${dd}-${suffix}`;
+    }
+    function openModal(id){ const m=document.getElementById(id); if(m){ m.classList.add('open'); m.setAttribute('aria-hidden','false'); } }
+    function closeModal(id){ const m=document.getElementById(id); if(m){ m.classList.remove('open'); m.setAttribute('aria-hidden','true'); } }
+    function parseDateFlexible(s){
+      try{
+        const v = String(s||'').trim(); if (!v) return null;
+        if (/^\d{4}-\d{2}-\d{2}/.test(v)) return new Date(v);
+        const m = v.match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);
+        if (m){ const d=Number(m[1]), mm=Number(m[2])-1, y=Number(m[3]<100?('20'+m[3]):m[3]); return new Date(y,mm,d); }
+        const t = Date.parse(v); return isNaN(t)?null:new Date(t);
+      }catch(_){ return null; }
+    }
+    function fmtDmy(s){ const d=parseDateFlexible(s); if(!d) return ''; const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); const yy=d.getFullYear(); return `${dd}/${mm}/${yy}`; }
+
+    // ===== Employee mapping (name -> email) lấy từ file cũ
+    const EMPLOYEE_EMAIL = (()=>{
+      const normalize = s => String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim().toLowerCase();
+      const raw = {
+        "Bùi Đặng Quốc Huy":"huy.bui@karofi.vn",
+        "Đào Hoàng Dương":"duong.dao@karofi.vn",
+        "Đỗ Quang Long":"long.do@karofi.vn",
+        "Hà Mỹ Linh":"linh.ha@karofi.vn",
+        "Nguyễn Hữu Thịnh":"thinh.nguyen2@karofi.vn",
+        "Nguyễn Văn Hiếu":"hieu.nguyen2@karofi.vn",
+        "Nguyễn Văn Linh":"linh.nguyen@karofi.vn",
+        "Phạm Thành Trung Kiên":"kien.pham1@karofi.vn",
+        "Thái Thị Giang":"giang.thai@karofi.vn",
+        "Trần Hiếu Nghĩa":"nghia.tran@karofi.vn",
+        "Vũ Thị Hằng":"hang.vu@karofi.vn",
+        "Đào Tuấn Kỳ":"ky.dao@karofi.vn",
+        "Đỗ Thế Cường":"cuong.do@karofi.vn",
+        "Lại Quốc Lộc":"loc.lai@karofi.vn",
+        "Lê Ngọc Ánh":"anh.le1@karofi.vn",
+        "Lê Thị Thanh Nhàn":"nhan.le@karofi.vn",
+        "Lê Thị Thảo":"thao.le@karofi.vn",
+        "Lê Văn Sơn":"son.le2@karofi.vn",
+        "Nguyễn Thị Hiền":"hien.nguyen1@karofi.vn",
+        "Phạm Thị Minh":"minh.pham1@karofi.vn",
+        "Vũ Duy Minh":"minh.vu@karofi.vn",
+        "Vũ Thị Thanh Hiền":"hien.vu2@karofi.vn"
+      };
+      const map = {}; Object.keys(raw).forEach(k => map[normalize(k)] = raw[k]);
+      return { get: (name)=> map[normalize(name)] || '' };
+    })();
+
+    // (đã loại dữ liệu mock)
+
+    // ===== Data fetching
+    async function fetchReports(params){
+      const headerMapReports = {
+        header_id: 'ID',
+        field_id: 'id',
+        header_code: 'Mã báo cáo',
+        field_code: 'code',
+        header_title: 'Tiêu đề',
+        field_title: 'title',
+        header_reporter: 'Người lập',
+        field_reporter: 'reporter',
+        header_reporterEmail: 'Email',
+        field_reporterEmail: 'reporterEmail',
+        header_submitDate: 'Ngày nộp',
+        field_submitDate: 'submitDate',
+        header_wishDate: 'Hạn mong muốn',
+        field_wishDate: 'wishDate',
+        header_dueDate: 'Hạn đánh giá',
+        field_dueDate: 'dueDate',
+        header_status: 'Trạng thái',
+        field_status: 'status',
+        header_reportUrl: 'Liên kết báo cáo',
+        field_reportUrl: 'reportUrl'
+      };
+      // Chuẩn hóa tham số ngày và nhân bản dưới nhiều key để tương thích backend
+      const normalizeDate = (v)=>{ const d=parseDateFlexible(v); if(!d) return ''; const yy=d.getFullYear(); const mm=String(d.getMonth()+1).padStart(2,'0'); const dd=String(d.getDate()).padStart(2,'0'); return `${yy}-${mm}-${dd}`; };
+      const fromRaw = params && typeof params.from==='string' ? params.from : '';
+      const toRaw = params && typeof params.to==='string' ? params.to : '';
+      const qRaw = params && typeof params.q==='string' ? params.q : '';
+      const statusRaw = params && typeof params.status==='string' ? params.status : '';
+      const modeRaw = params && typeof params.mode==='string' ? params.mode : '';
+      const pageRaw = params && (params.page!==undefined) ? String(params.page) : '';
+      const pageSizeRaw = params && (params.pageSize!==undefined) ? String(params.pageSize) : '';
+
+      const fromIso = normalizeDate(fromRaw);
+      const toIso = normalizeDate(toRaw);
+      const dateParams = {};
+      if (fromIso){ Object.assign(dateParams, { from:fromIso, fromDate:fromIso, date_from:fromIso, start_date:fromIso, submitFrom:fromIso, ngay_tu:fromIso }); }
+      if (toIso){ Object.assign(dateParams, { to:toIso, toDate:toIso, date_to:toIso, end_date:toIso, submitTo:toIso, ngay_den:toIso }); }
+
+      const qParams = {};
+      if (qRaw){ Object.assign(qParams, { q:qRaw, keyword:qRaw, search:qRaw, s:qRaw, code:qRaw, title:qRaw, reporter:qRaw }); }
+
+      function statusToViLabel(code){
+        const m = { Pending:'Chờ phê duyệt', Approved:'Done', ChangesRequested:'Đang sửa', TestBen:'Test bền', Rejected:'Từ chối' };
+        return m[code] || code;
+      }
+      const statusParams = {};
+      if (statusRaw && statusRaw!=='All'){
+        const labelVi = statusToViLabel(statusRaw);
+        Object.assign(statusParams, {
+          status: labelVi,
+          state: labelVi,
+          trangthai: labelVi,
+          status_vi: labelVi,
+          status_code: statusRaw
+        });
+      }
+
+      const modeParams = {};
+      if (modeRaw && modeRaw!=='All'){
+        Object.assign(modeParams, { mode:modeRaw, range:modeRaw, period:modeRaw });
+      }
+
+      const pageParams = {};
+      const pg = Math.max(1, parseInt(pageRaw||'1', 10)||1);
+      const ps = Math.max(1, parseInt(pageSizeRaw||'20', 10)||20);
+      const offset = (pg-1)*ps;
+      Object.assign(pageParams, { page:String(pg), page_index:String(pg), pageNumber:String(pg), pageSize:String(ps), limit:String(ps), size:String(ps), per_page:String(ps), offset:String(offset) });
+
+      const qs = new URLSearchParams({ action:'reports_query', ...headerMapReports, ...qParams, ...dateParams, ...statusParams, ...modeParams, ...pageParams, _ts: Date.now().toString() });
+      function setDebug(url, raw, first){ try{ const u=document.getElementById('dbg-url'); if(u) u.textContent = url; const t=document.getElementById('dbg-raw'); if(t) t.value = raw||''; const f=document.getElementById('dbg-row'); if(f) f.value = first? JSON.stringify(first,null,2):''; }catch(_){ } }
+      async function fetchJson(url){ const full=`${url}?${qs.toString()}`; const r = await fetch(full, { method:'GET' }); const txt = await r.text(); let parsed=null; try{ parsed=JSON.parse(txt);}catch{} setDebug(full, txt.slice(0,4000), null); return { ok:r.ok, parsed, raw:txt, status:r.status, fullUrl:full }; }
+      function pickRowsDeep(json){ if(!json) return []; if(Array.isArray(json)) return json; const c=['items','data','rows','list','result','records']; for(const k of c){ if(Array.isArray(json?.[k])) return json[k]; } try{ const q=[json]; const seen=new Set(); while(q.length){ const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur); for(const v of Object.values(cur)){ if(Array.isArray(v) && v.length && typeof v[0]==='object') return v; if(v&&typeof v==='object') q.push(v); } } }catch(_){} return []; }
+      let resp = await fetchJson(REPORTS_QUERY_URL);
+      if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) resp = await fetchJson(REPORTS_QUERY_URL.replace('/webhook-test/','/webhook/'));
+      if (!resp.ok) return [];
+      const rows = pickRowsDeep(resp.parsed ?? (resp.raw? JSON.parse(resp.raw): null));
+      function normalizeStatus(val){
+        const v = String(val||'').trim().toLowerCase();
+        if (!v) return 'Pending';
+        if (['pending','cho phe duyet','chờ phê duyệt','cho_duyet','cho'].includes(v)) return 'Pending';
+        if (['approved','done','hoan thanh','hoàn thành','da duyet','đã duyệt'].includes(v)) return 'Approved';
+        if (['changesrequested','dang sua','đang sửa','yeu cau bo sung','yêu cầu bổ sung','sua'].includes(v)) return 'ChangesRequested';
+        if (['test ben','test_ben','testben'].includes(v)) return 'TestBen';
+        if (['rejected','tu choi','từ chối'].includes(v)) return 'Rejected';
+        return val; // giữ nguyên nếu khác để vẫn hiển thị được
+      }
+      function lowerKeyMap(obj){
+        const map={};
+        try{ Object.keys(obj||{}).forEach(k=>{ map[String(k).toLowerCase()] = obj[k]; }); }catch(_){ }
+        return map;
+      }
+      function getFrom(lowerObj, ...keys){
+        for(const k of keys){
+          const kk = String(k||'').toLowerCase();
+          if (lowerObj.hasOwnProperty(kk)) return lowerObj[kk];
+        }
+        return '';
+      }
+      const normalizedRows = rows.map(x=>{
+        const lx = lowerKeyMap(x||{});
+        const id = getFrom(lx,'id','ID','reportId','report_id');
+        const code = getFrom(lx,'code','mã báo cáo','ma','taskcode','reportCode');
+        const title = getFrom(lx,'title','tiêu đề','name','reportTitle','tên');
+        const reporter = getFrom(lx,'reporter','người lập','employee','author','nhân viên');
+        const reporterEmail = getFrom(lx,'reporterEmail','email');
+        const submitDate = getFrom(lx,'submitDate','ngày nộp','date','ngaynop','ngaynộp','ngaynộp');
+        const wishDate = getFrom(lx,'wishDate','hạn mong muốn','hanmongmuon','wish');
+        const dueDate = getFrom(lx,'dueDate','deadline','hạn đánh giá');
+        const statusRaw = getFrom(lx,'status','trạng thái','trangthai');
+        const reportUrl = getFrom(lx,'reportUrl','liên kết báo cáo','url','link','href');
+        return {
+          id: id || code || '',
+          code: code || id || '',
+          title: title || '',
+          reporter: reporter || '',
+          reporterEmail: reporterEmail || '',
+          submitDate: submitDate || '',
+          wishDate: wishDate || '',
+          dueDate: dueDate || '',
+          status: normalizeStatus(statusRaw || 'Pending'),
+          reportUrl: reportUrl || ''
+        };
+      });
+      try{ setDebug(resp.fullUrl||'', resp.raw||'', normalizedRows[0]||null); }catch(_){ }
+      return normalizedRows;
+    }
+
+    // ===== Render
+    function applyFilters(all){
+      const q = (document.getElementById('flt-q')?.value || '').trim().toLowerCase();
+      const st = (document.getElementById('flt-status')?.value || 'All');
+      const from = parseDateFlexible(document.getElementById('flt-from')?.value || '');
+      const to   = parseDateFlexible(document.getElementById('flt-to')?.value || '');
+      return all.filter(it=>{
+        const okQ = !q || [it.code,it.title,it.reporter].join(' ').toLowerCase().includes(q);
+        const okS = (st==='All') || (String(it.status||'')===st);
+        let okD = true;
+        const sub = parseDateFlexible(it.submitDate);
+        if (from && sub) okD = okD && (sub.getTime() >= new Date(from.getFullYear(),from.getMonth(),from.getDate()).getTime());
+        if (to && sub) okD = okD && (sub.getTime() <= new Date(to.getFullYear(),to.getMonth(),to.getDate(),23,59,59,999).getTime());
+        return okQ && okS && okD;
+      });
+    }
+    function updatePager(total){
+      const pager = document.getElementById('pager');
+      const info = document.getElementById('page-info');
+      const ps = PAGE_SIZE; const pages = Math.max(1, Math.ceil(total/ps));
+      if (CURRENT_PAGE > pages) CURRENT_PAGE = pages;
+      if (info) info.textContent = `Trang ${CURRENT_PAGE}/${pages} (${total} dòng)`;
+      pager.style.display = total>0 ? 'flex' : 'none';
+    }
+    function renderTable(){
+      const body = document.getElementById('list-body'); if (!body) return;
+      const total = FILTERED.length; updatePager(total);
+      if (!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="7">Chưa có dữ liệu</td></tr>'; return; }
+      const start = (CURRENT_PAGE-1)*PAGE_SIZE; const end = Math.min(total, start+PAGE_SIZE);
+      const pageItems = FILTERED.slice(start,end);
+      const today = new Date(); const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      body.innerHTML = pageItems.map(it=>{
+        const due = parseDateFlexible(it.dueDate);
+        let trClass = '';
+        if (due){
+          const d0 = new Date(due.getFullYear(),due.getMonth(),due.getDate());
+          if (d0.getTime() === today0.getTime()) trClass = 'bg-yellow-50';
+          else if (d0.getTime() < today0.getTime()) trClass = 'bg-red-50';
+        }
+        const statusBadge = ({
+          'Pending': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Chờ phê duyệt</span>',
+          'Approved': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">Done</span>',
+          'ChangesRequested': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Đang sửa</span>',
+          'TestBen': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Test bền</span>',
+          'Rejected': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">Từ chối</span>'
+        })[String(it.status||'Pending')] || String(it.status||'');
+        const disabled = it.status!=='Pending' ? 'opacity-50 pointer-events-none' : '';
+        return `
+          <tr class="${trClass}">
+            <td class="px-3 py-2"><a href="#" class="text-blue-700 underline report-link" data-id="${it.id}">${it.code}</a></td>
+            <td class="px-3 py-2"><a href="#" class="text-blue-700 hover:underline task-detail-link" data-id="${it.id}">${it.title}</a></td>
+            <td class="px-3 py-2"><div>${it.reporter}</div>${it.reporterEmail?`<div class=\"text-xs text-gray-500\">${it.reporterEmail}</div>`:''}</td>
+            <td class="px-3 py-2">${fmtDmy(it.submitDate)}</td>
+            <td class="px-3 py-2">${fmtDmy(it.wishDate)}</td>
+            <td class="px-3 py-2">${fmtDmy(it.dueDate)}</td>
+            <td class="px-3 py-2">${statusBadge}</td>
+            <td class="px-3 py-2">
+              <div class="flex items-center gap-2">
+                <button class="px-3 py-1 rounded-full text-white font-semibold bg-primary-blue hover:brightness-105 act-approve ${disabled}" data-id="${it.id}">Duyệt</button>
+                <button class="px-3 py-1 rounded-full text-white font-semibold" style="background:#ef4444" data-id="${it.id}">Từ chối</button>
+                <button class="px-3 py-1 rounded-full text-white font-semibold" style="background:#f59e0b" data-id="${it.id}">Yêu cầu bổ sung</button>
+              </div>
+            </td>
+          </tr>`;
+      }).join('');
+    }
+
+    // ===== Actions
+    function findItem(id){ return ALL_ITEMS.find(x=> String(x.id)===String(id)); }
+    async function openTaskDetail(id){
+      const modalId='modal-task'; const titleEl=document.getElementById('task-title'); const content=document.getElementById('task-content'); const openNew=document.getElementById('task-open-new');
+      const it=findItem(id); if(titleEl) titleEl.textContent = it? `${it.code} — ${it.title}` : String(id||'');
+      if(content) content.textContent='Đang tải...';
+      let url=''; let detailHtml='';
+      if (USE_MOCK){
+        url = 'https://example.com/report/'+encodeURIComponent(String(id||''));
+        detailHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+          <div><b>Mã:</b> ${it?.code||''}</div>
+          <div><b>Tên tác vụ:</b> ${it?.title||''}</div>
+          <div><b>Người yêu cầu:</b> ${it?.requesterName||it?.reporter||''}</div>
+          <div><b>Phòng ban yêu cầu:</b> ${it?.requesterDept||''}</div>
+          <div><b>Người nhận mẫu:</b> ${it?.receiverName||''}</div>
+          <div><b>Form đánh giá:</b> ${it?.formName||''}</div>
+          <div><b>Công chuẩn:</b> ${typeof it?.manhour==='number'?it.manhour.toFixed(2):String(it?.manhour||'')}</div>
+          <div><b>Ngày yêu cầu:</b> ${fmtDmy(it?.requestDate||it?.submitDate||'')}</div>
+          <div><b>Hạn mong muốn:</b> ${fmtDmy(it?.wishDate||'')}</div>
+          <div class="md:col-span-2"><b>Mục đích đánh giá:</b> ${it?.purpose||''}</div>
+          <div class="md:col-span-2"><b>Note:</b> ${it?.note||''}</div>
+          <div class="md:col-span-2"><b>Yêu cầu test đặc biệt:</b> ${it?.specialTest||''}</div>
+        </div>`;
+      } else {
+        const headerMapDetail = {
+          header_id:'ID', field_id:'id', header_code:'Mã', field_code:'code', header_title:'Tên tác vụ', field_title:'title',
+          header_requester:'Người yêu cầu', field_requester:'requesterName', header_requesterDept:'Phòng ban yêu cầu', field_requesterDept:'requesterDept', header_receiver:'Người nhận mẫu', field_receiver:'receiverName',
+          header_form:'Form đánh giá', field_form:'formName', header_manhour:'Công chuẩn', field_manhour:'manhour',
+          header_requestDate:'Ngày yêu cầu', field_requestDate:'requestDate', header_wishDate:'Hạn mong muốn', field_wishDate:'wishDate',
+          header_purpose:'Mục đích đánh giá', field_purpose:'purpose', header_note:'Note', field_note:'note', header_special:'Yêu cầu test đặc biệt', field_special:'specialTest',
+          header_link:'Link', field_link:'link'
+        };
+        const qs=new URLSearchParams({ action:'task_detail', ...headerMapDetail, id:String(id), _ts:Date.now().toString() });
+        async function fetchJson(u){ const r=await fetch(`${u}?${qs.toString()}`, { method:'GET' }); const t=await r.text(); let j=null; try{ j=JSON.parse(t);}catch{} return { ok:r.ok, parsed:j, raw:t, status:r.status }; }
+        function pickObj(j){ if(!j) return null; if(Array.isArray(j) && j.length) return j[0]; if(typeof j==='object') return j; try{ const q=[j]; const seen=new Set(); while(q.length){ const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur); if(Object.keys(cur).length) return cur; for(const v of Object.values(cur)){ if(v && typeof v==='object') q.push(v); } } }catch(_){ } return null; }
+        let resp=await fetchJson(WEBHOOK_TEST); if(!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) resp=await fetchJson(WEBHOOK_PROD);
+        const obj=pickObj(resp.parsed ?? (resp.raw? JSON.parse(resp.raw): null)) || {};
+        const get=(...keys)=>{ for(const k of keys){ const v=obj[k]||obj[k?.toLowerCase?.()]; if(v!==undefined) return v; } return ''; };
+        url = get('link','url','href')||'';
+        detailHtml = `<div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+          <div><b>Mã:</b> ${get('code','ma','id')}</div>
+          <div><b>Tên tác vụ:</b> ${get('title','name')}</div>
+          <div><b>Người yêu cầu:</b> ${get('requesterName','requester','nguoiyc')}</div>
+          <div><b>Phòng ban yêu cầu:</b> ${get('requesterDept','dept','phongban')}</div>
+          <div><b>Người nhận mẫu:</b> ${get('receiverName','receiver','nguoinhan')}</div>
+          <div><b>Form đánh giá:</b> ${get('formName','form')}</div>
+          <div><b>Công chuẩn:</b> ${get('manhour','congchuan')}</div>
+          <div><b>Ngày yêu cầu:</b> ${fmtDmy(get('requestDate','ngayyeucau','ngay_yeu_cau'))}</div>
+          <div><b>Hạn mong muốn:</b> ${fmtDmy(get('wishDate','wish'))}</div>
+          <div class="md:col-span-2"><b>Mục đích đánh giá:</b> ${get('purpose','mucdich')}</div>
+          <div class="md:col-span-2"><b>Note:</b> ${get('note')}</div>
+          <div class="md:col-span-2"><b>Yêu cầu test đặc biệt:</b> ${get('specialTest','yeucautest')}</div>
+        </div>`;
+      }
+      if (openNew){ openNew.href = url||'#'; openNew.style.pointerEvents = url? '':'none'; openNew.style.opacity = url? '1':'0.5'; }
+      if (content) content.innerHTML = detailHtml;
+      openModal(modalId);
+    }
+    async function openReportPreview(id){
+      const modalId = 'modal-report'; const frame = document.getElementById('report-frame'); const titleEl = document.getElementById('report-title'); const openNew = document.getElementById('report-open-new');
+      const it = findItem(id); if (titleEl) titleEl.textContent = it ? `${it.code} — ${it.title}` : String(id||'');
+      let url = '';
+      {
+        const it = findItem(id);
+        url = it?.reportUrl || '';
+        if (!url){
+          const headerMapDetail = { header_reportUrl: 'Liên kết báo cáo', field_reportUrl: 'reportUrl' };
+          const qs = new URLSearchParams({ action:'report_detail', ...headerMapDetail, id:String(id), _ts: Date.now().toString() });
+          async function fetchJson(u){ const r=await fetch(`${u}?${qs.toString()}`, { method:'GET' }); const t=await r.text(); let j=null; try{ j=JSON.parse(t);}catch{} return { ok:r.ok, parsed:j, raw:t, status:r.status }; }
+          function pickUrl(j){ if(!j) return ''; const cands=['url','reportUrl','link','file','href']; for(const k of cands){ const v=j[k]||j[k.toLowerCase?.()]||undefined; if (typeof v==='string' && v) return v; } try{ const q=[j]; const seen=new Set(); while(q.length){ const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur); for(const [k,v] of Object.entries(cur)){ if (typeof v==='string' && /https?:\/\//i.test(v)) return v; if (v && typeof v==='object') q.push(v); } } }catch(_){} return ''; }
+          let resp = await fetchJson(WEBHOOK_TEST);
+          if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) resp = await fetchJson(WEBHOOK_PROD);
+          url = pickUrl(resp.parsed ?? (resp.raw? JSON.parse(resp.raw): null)) || '';
+        }
+      }
+      if (openNew) { openNew.href = url || '#'; openNew.style.pointerEvents = url ? '' : 'none'; openNew.style.opacity = url ? '1' : '0.5'; }
+      if (frame) frame.src = url || 'about:blank';
+      openModal(modalId);
+    }
+    async function doApprove(){
+      const btn = document.getElementById('approve-do'); if (!CURRENT_ITEM_ID || !btn) return;
+      const prev = btn.textContent; btn.disabled = true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang gửi...";
+      const comment = (document.getElementById('approve-comment')?.value||'').trim();
+      const qaCode = generateQaPdCode();
+      try{
+          const p = new URLSearchParams({ action:'report_approve', id:String(CURRENT_ITEM_ID), comment, qa_code: qaCode, _ts: Date.now().toString() });
+          async function tryPost(url){ try{ const r=await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          async function tryPostNoCors(url){ try{ await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); return { ok:true, raw:'' }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          async function tryGet(url){ try{ const r=await fetch(`${url}?${p.toString()}`, { method:'GET' }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          let r = await tryPostNoCors(FORM_ACTION_URL);
+          if (!r.ok) r = await tryPost(FORM_ACTION_URL);
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM_ACTION_URL);
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryPost(FORM_ACTION_URL.replace('/webhook-test/','/webhook/'));
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM_ACTION_URL.replace('/webhook-test/','/webhook/'));
+          if (!r.ok) throw new Error(r.raw||'Gửi thất bại');
+        closeModal('modal-approve'); showToast(`Đã duyệt báo cáo. Mã: ${qaCode}`,'success');
+        FILTERED = applyFilters(ALL_ITEMS); renderTable();
+      }catch(err){ showToast('Lỗi duyệt báo cáo.','error'); }
+      finally{ btn.disabled=false; btn.textContent = prev||'Xác nhận duyệt'; }
+    }
+    async function doReject(){
+      const btn = document.getElementById('reject-do'); if (!CURRENT_ITEM_ID || !btn) return;
+      const prev = btn.textContent; btn.disabled=true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang gửi...";
+      const reason = (document.getElementById('reject-reason')?.value||'').trim();
+      if (!reason){ showToast('Vui lòng nhập lý do.','error'); btn.disabled=false; btn.textContent=prev; return; }
+      const qaCode = generateQaPdCode();
+      try{
+          const p = new URLSearchParams({ action:'report_reject', id:String(CURRENT_ITEM_ID), reason, qa_code: qaCode, _ts: Date.now().toString() });
+          async function tryPost(url){ try{ const r=await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          async function tryPostNoCors(url){ try{ await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); return { ok:true, raw:'' }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          async function tryGet(url){ try{ const r=await fetch(`${url}?${p.toString()}`, { method:'GET' }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          let r = await tryPostNoCors(FORM_ACTION_URL);
+          if (!r.ok) r = await tryPost(FORM_ACTION_URL);
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM_ACTION_URL);
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryPost(FORM_ACTION_URL.replace('/webhook-test/','/webhook/'));
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM_ACTION_URL.replace('/webhook-test/','/webhook/'));
+          if (!r.ok) throw new Error(r.raw||'Gửi thất bại');
+        closeModal('modal-reject'); showToast(`Đã từ chối. Mã: ${qaCode}`,'success');
+        FILTERED = applyFilters(ALL_ITEMS); renderTable();
+      }catch(err){ showToast('Lỗi từ chối.','error'); }
+      finally{ btn.disabled=false; btn.textContent = prev||'Xác nhận từ chối'; }
+    }
+    async function doRequest(){
+      const btn = document.getElementById('req-do'); if (!CURRENT_ITEM_ID || !btn) return;
+      const prev = btn.textContent; btn.disabled=true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang gửi...";
+      const comment = (document.getElementById('req-comment')?.value||'').trim();
+      const dueDate = (document.getElementById('req-due')?.value||'').trim();
+      const qaCode = generateQaPdCode();
+      try{
+          const p = new URLSearchParams({ action:'report_request_changes', id:String(CURRENT_ITEM_ID), comment, dueDate, qa_code: qaCode, _ts: Date.now().toString() });
+          async function tryPost(url){ try{ const r=await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          async function tryPostNoCors(url){ try{ await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); return { ok:true, raw:'' }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          async function tryGet(url){ try{ const r=await fetch(`${url}?${p.toString()}`, { method:'GET' }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+          let r = await tryPostNoCors(FORM_ACTION_URL);
+          if (!r.ok) r = await tryPost(FORM_ACTION_URL);
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM_ACTION_URL);
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryPost(FORM_ACTION_URL.replace('/webhook-test/','/webhook/'));
+          if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM_ACTION_URL.replace('/webhook-test/','/webhook/'));
+          if (!r.ok) throw new Error(r.raw||'Gửi thất bại');
+        closeModal('modal-req'); showToast(`Đã yêu cầu bổ sung. Mã: ${qaCode}`,'success');
+        FILTERED = applyFilters(ALL_ITEMS); renderTable();
+      }catch(err){ showToast('Lỗi gửi yêu cầu.','error'); }
+      finally{ btn.disabled=false; btn.textContent = prev||'Gửi yêu cầu'; }
+    }
+
+    // ===== Form 4 =====
+    let F4_SELECTED = [];
+    function renderForm4(){ /* Không còn dựng từ mock; giữ chỗ nếu cần mở rộng thêm */ }
+    async function renderF4Pivot(){
+      const body = document.getElementById('f4-pivot-body'); const sum = document.getElementById('f4-pivot-sum-total'); const note = document.getElementById('f4-pivot-note');
+      if (!body) return;
+      body.innerHTML = `<tr><td colspan="7" class="px-3 py-3 text-center text-gray-500"><span class='spinner mr-2'></span>Đang tải...</td></tr>`;
+      try{
+        
+        // API mode: ánh xạ logic từ file Nội bộ - duyệt từng nhân sự, lọc Doing quá hạn
+        const EMPLOYEE_NAMES = [
+          'Bùi Đặng Quốc Huy','Đào Hoàng Dương','Đỗ Quang Long','Hà Mỹ Linh','Lại Quốc Lộc','Lê Ngọc Ánh','Lê Thị Thanh Nhàn','Lê Thị Thảo','Lê Văn Sơn','Nguyễn Hữu Thịnh','Nguyễn Thị Hiền','Nguyễn Văn Hiếu','Nguyễn Văn Linh','Phạm Thành Trung Kiên','Phạm Thị Minh','Thái Thị Giang','Trần Hiếu Nghĩa','Vũ Thị Hằng','Vũ Thị Thanh Hiền'
+        ];
+        const selectedKeys = (F4_SELECTED||[]).slice();
+        const targetNames = selectedKeys.length ? EMPLOYEE_NAMES.filter(n=> selectedKeys.some(k=> n.toLowerCase().includes(k.toLowerCase()))) : EMPLOYEE_NAMES.slice();
+        function lower(obj){ const m={}; try{ Object.keys(obj||{}).forEach(k=> m[String(k).toLowerCase()] = obj[k]); }catch(_){ } return m; }
+        function getV(obj, keys){ const l=lower(obj); for(const k of keys){ const v=l[String(k).toLowerCase()]; if(v!==undefined) return v; } return ''; }
+        async function fetchJson(u){ const r=await fetch(u,{method:'GET'}); const t=await r.text(); let j=null; try{ j=JSON.parse(t);}catch{} return { ok:r.ok, parsed:j, raw:t, status:r.status }; }
+        function pickRows(j){ if(!j) return []; if(Array.isArray(j)) return j; const c=['data','rows','result','records','items','list']; for(const k of c){ if(Array.isArray(j?.[k])) return j[k]; } try{ const q=[j]; const seen=new Set(); while(q.length){ const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur); for(const v of Object.values(cur)){ if(Array.isArray(v) && v.length && typeof v[0]==='object') return v; if(v&&typeof v==='object') q.push(v); } } }catch(_){} return []; }
+        const rowsOut=[];
+        for (const name of targetNames){
+          const headerMap = { header_requestDate:'Ngày yêu cầu', header_wishDue:'Hạn mong muốn', header_actualDue:'Hạn đáp ứng', header_status:'Trạng thái', header_code:'Mã', header_taskName:'Tên tác vụ', field_requestDate:'requestDate', field_wishDue:'wishDue', field_actualDue:'actualDue', field_status:'status', field_code:'code', field_taskName:'taskName' };
+          const qs = new URLSearchParams({ ...headerMap, action:'form1_lookup', person_name: name, _ts: Date.now().toString() });
+          let resp = await fetchJson(`${FORM4_LOOKUP_URL}?${qs.toString()}`);
+          if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) resp = await fetchJson(`${FORM4_LOOKUP_URL.replace('/webhook-test/','/webhook/')}?${qs.toString()}`);
+          const arr = pickRows(resp.parsed ?? (resp.raw? JSON.parse(resp.raw): null));
+          arr.forEach(it=>{
+            const st = String(getV(it,['status','trạng thái','trangthai'])||'').toLowerCase();
+            const isDoing = st.includes('doing') || st.includes('đang');
+            const wish = getV(it,['wishdue','hạn mong muốn']);
+            const act = getV(it,['actualdue','hạn đáp ứng']);
+            const due = parseDateFlexible(act || wish || '');
+            if (!isDoing || !due) return;
+            const today = new Date(); const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const due0 = new Date(due.getFullYear(), due.getMonth(), due.getDate());
+            if (due0.getTime() <= today0.getTime()){
+              rowsOut.push({ assignee:name, code:getV(it,['code','mã']), taskName:getV(it,['taskname','tên tác vụ','title','name']), status:getV(it,['status','trạng thái']), requestDate:getV(it,['requestdate','ngày yêu cầu']), wishDue:wish, actualDue:act });
+            }
+          });
+        }
+        rowsOut.sort((a,b)=> a.assignee.localeCompare(b.assignee,'vi'));
+        if (!rowsOut.length){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="7">Chưa có dữ liệu</td></tr>'; if(sum) sum.textContent='0'; if(note) note.textContent=''; return; }
+        body.innerHTML = rowsOut.map(r=>`
+          <tr>
+            <td class="px-3 py-2">${r.assignee}</td>
+            <td class="px-3 py-2">${r.code}</td>
+            <td class="px-3 py-2">${r.taskName}</td>
+            <td class="px-3 py-2">${r.status}</td>
+            <td class="px-3 py-2">${r.requestDate}</td>
+            <td class="px-3 py-2">${r.wishDue}</td>
+            <td class="px-3 py-2">${r.actualDue}</td>
+          </tr>
+        `).join('');
+        if (sum) sum.textContent = String(rowsOut.length);
+        if (note) note.textContent = 'Danh sách Doing quá hạn (ánh xạ theo file nội bộ).';
+      }catch(err){ body.innerHTML = `<tr><td class='px-3 py-3 text-center text-red-600' colspan='7'>Lỗi tải dữ liệu</td></tr>`; if(sum) sum.textContent='0'; if(note) note.textContent=''; }
+    }
+
+    // ===== Form 5 (mock + Chart)
+    function destroyF5Chart(){ try{ if (F5A_CHART){ F5A_CHART.destroy(); F5A_CHART=null; } }catch(_){}}
+    function renderStackedChart(rows){
+      const wrap = document.getElementById('f5a-chart-container'); const canvas=document.getElementById('f5a-chart');
+      if (!canvas){ destroyF5Chart(); if(wrap) wrap.style.display='none'; return; }
+      if (!rows || !rows.length){ destroyF5Chart(); if(wrap) wrap.style.display='none'; return; }
+      if (wrap) wrap.style.display='';
+      const labels = rows.map(r=> r.name);
+      const counts = rows.map(r=> Number(r.count)||0);
+      const cntAhead = rows.map(r=> Number(r.ahead)||0);
+      const cntOn = rows.map(r=> Number(r.ontime)||0);
+      const cntLate = rows.map(r=> Number(r.late)||0);
+      const isHorizontal = (F5A_MODE==='horizontal');
+      const ctx = canvas.getContext('2d'); destroyF5Chart();
+      F5A_CHART = new Chart(ctx, {
+        type:'bar',
+        data:{ labels, datasets:[
+          { label:'Vượt', data: cntAhead, backgroundColor:'rgba(147,197,253,0.9)', stack:'rates' },
+          { label:'Đúng', data: cntOn, backgroundColor:'rgba(134,239,172,0.85)', stack:'rates' },
+          { label:'Chậm', data: cntLate, backgroundColor:'rgba(254,202,202,0.9)', stack:'rates' }
+        ] },
+        options:{ responsive:true, maintainAspectRatio:false, indexAxis:isHorizontal?'y':'x', scales:{ x:{ stacked:true }, y:{ stacked:true, beginAtZero:true } }, plugins:{ legend:{ position:'bottom' } } }
+      });
+      try{ setTimeout(()=>{ wrap && wrap.scrollIntoView({ behavior:'smooth', block:'nearest' }); }, 100); }catch(_){ }
+    }
+    async function renderForm5All(){
+      const body = document.getElementById('f5a-body'); if(!body) return;
+      
+      // API path: dùng webhook cũ
+      async function fetchJson(url){ const r = await fetch(url, { method:'GET' }); const t = await r.text(); let parsed=null; try{ parsed=JSON.parse(t);}catch{} return { ok:r.ok, parsed, raw:t, status:r.status }; }
+      function pickRowsDeep(json){ if(!json) return []; if(Array.isArray(json) && json.length && typeof json[0]==='object') return json; const candidates=['data','rows','result','records','items','list']; for(const k of candidates){ if (Array.isArray(json?.[k]) && json[k].length && typeof json[k][0]==='object') return json[k]; } try{ const q=[json]; const seen=new Set(); while(q.length){ const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur); for(const v of Object.values(cur)){ if(Array.isArray(v) && v.length && typeof v[0]==='object') return v; if(v&&typeof v==='object') q.push(v); } } }catch(_){} return []; }
+      const params = new URLSearchParams({ action:'form5_all_stats', _ts: Date.now().toString() });
+      // header/field mapping for Form5 stats
+      params.append('header_employee','Nhân viên'); params.append('field_employee','employee');
+      params.append('header_current_manhour','Công chuẩn hiện tại'); params.append('field_current_manhour','manhour');
+      params.append('header_needManhour','Công chuẩn cần nhận'); params.append('field_needManhour','Need_manhour');
+      params.append('header_task_count','Số tác vụ trong tháng'); params.append('field_task_count','taskCount');
+      params.append('header_done','Số DONE'); params.append('field_done','done');
+      params.append('header_ahead','Vượt tiến độ'); params.append('field_ahead','ahead');
+      params.append('header_ontime','Đúng tiến độ'); params.append('field_ontime','ontime');
+      params.append('header_late','Chậm tiến độ'); params.append('field_late','late');
+      params.append('header_rate_ontime','Tỷ lệ đúng (%)'); params.append('field_rate_ontime','rate_ontime');
+      params.append('header_rate_late','Tỷ lệ chậm (%)'); params.append('field_rate_late','rate_late');
+      params.append('header_rate_ahead','Tỷ lệ vượt (%)'); params.append('field_rate_ahead','rate_ahead');
+      let resp = await fetchJson(`${FORM5_STATS_URL}?${params.toString()}`);
+      if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) resp = await fetchJson(`${FORM5_STATS_URL.replace('/webhook-test/','/webhook/')}?${params.toString()}`);
+      if (!resp.ok){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-red-600" colspan="11">Lỗi tải dữ liệu</td></tr>'; renderStackedChart([]); return; }
+      const rowsRaw = pickRowsDeep(resp.parsed ?? (resp.raw? JSON.parse(resp.raw): null));
+      const normalize = (obj)=>{ const lower = Object.keys(obj||{}).reduce((a,k)=>{ a[k.toLowerCase()] = obj[k]; return a; },{}); const get=(...keys)=>{ for(const k of keys){ const v=lower[k.toLowerCase()]; if(v!==undefined) return v; } return ''; }; const name=get('employee','nhanvien','nhân viên','name'); const man=Number(get('manhour','current_manhour','công chuẩn hiện tại')); const cnt=Number(get('taskcount','task_count','count')); const done=Number(get('done')); const ahead=Number(get('ahead')); const on=Number(get('ontime')); const late=Number(get('late')); return { name, email: EMPLOYEE_EMAIL.get(name), manhour:isNaN(man)?0:man, need:get('need_manhour','công chuẩn cần nhận'), count:isNaN(cnt)?0:cnt, done:isNaN(done)?0:done, ahead:isNaN(ahead)?0:ahead, ontime:isNaN(on)?0:on, late:isNaN(late)?0:late }; };
+      const rows = rowsRaw.map(normalize).sort((a,b)=> (b.manhour||0) - (a.manhour||0));
+      if (!rows.length){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="11">Chưa có dữ liệu</td></tr>'; renderStackedChart([]); return; }
+      body.innerHTML = rows.map(r=>`
+        <tr>
+          <td class="px-3 py-2"><div>${r.name}</div>${r.email?`<div class=\"text-xs text-gray-500\">${r.email}</div>`:''}</td>
+          <td class="px-3 py-2">${Number(r.manhour||0).toFixed(2)}</td>
+          <td class="px-3 py-2 cell-div">${r.need||''}</td>
+          <td class="px-3 py-2">${r.count}</td>
+          <td class="px-3 py-2">${r.done}</td>
+          <td class="px-3 py-2">${r.ahead}</td>
+          <td class="px-3 py-2">${r.ontime}</td>
+          <td class="px-3 py-2">${r.late}</td>
+          <td class="px-3 py-2">${r.count? Math.round(r.ahead*100/r.count):0}%</td>
+          <td class="px-3 py-2">${r.count? Math.round(r.ontime*100/r.count):0}%</td>
+          <td class="px-3 py-2">${r.count? Math.round(r.late*100/r.count):0}%</td>
+        </tr>
+      `).join('');
+      F5A_LAST_ROWS = rows.map(r=> ({ name:r.name, count:r.count, ahead:r.ahead, ontime:r.ontime, late:r.late }));
+      renderStackedChart(F5A_LAST_ROWS);
+    }
+
+    // ===== Events & Init
+    (function init(){
+      // Close modal on backdrop click
+      document.querySelectorAll('.modal').forEach(m=>{
+        m.addEventListener('click', (e)=>{ if (e.target === m) closeModal(m.id); });
+      });
+      document.querySelectorAll('[data-close]').forEach(b=>{
+        b.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(b.getAttribute('data-close')||''); });
+      });
+      document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal.open').forEach(m=> closeModal(m.id)); } });
+
+      // Toggle debug panel
+      document.getElementById('btn-debug')?.addEventListener('click', (e)=>{
+        e.preventDefault();
+        const panel=document.getElementById('debug-panel'); if(!panel) return; panel.style.display = panel.style.display==='none' ? 'block' : 'none';
+      });
+
+      const body = document.getElementById('list-body');
+      body.addEventListener('click', (e)=>{
+        const link = e.target.closest('.report-link');
+        if (link){ e.preventDefault(); const rid=link.getAttribute('data-id'); if (rid) openReportPreview(rid); return; }
+        const tLink = e.target.closest('.task-detail-link');
+        if (tLink){ e.preventDefault(); const rid=tLink.getAttribute('data-id'); if (rid) openTaskDetail(rid); return; }
+        // revert inline editing handlers: none
+        const btn = e.target.closest('button'); if (!btn) return;
+        const id = btn.getAttribute('data-id'); if (!id) return; CURRENT_ITEM_ID = id;
+        if (btn.classList.contains('act-approve')){ CURRENT_ACTION='approve'; (document.getElementById('approve-comment')||{}).value=''; openModal('modal-approve'); return; }
+        if (btn.textContent && btn.textContent.includes('Từ chối')){ CURRENT_ACTION='reject'; (document.getElementById('reject-reason')||{}).value=''; openModal('modal-reject'); return; }
+        if (btn.textContent && btn.textContent.includes('bổ sung')){ CURRENT_ACTION='request'; (document.getElementById('req-comment')||{}).value=''; (document.getElementById('req-due')||{}).value=''; openModal('modal-req'); return; }
+      });
+
+      document.getElementById('approve-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doApprove(); });
+      document.getElementById('reject-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doReject(); });
+      document.getElementById('req-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doRequest(); });
+
+      document.getElementById('btn-search')?.addEventListener('click', async (e)=>{ e.preventDefault(); await reload(); });
+      document.getElementById('btn-reset')?.addEventListener('click', async (e)=>{
+        e.preventDefault(); ['flt-q','flt-status','flt-from','flt-to'].forEach(id=>{ const el=document.getElementById(id); if(!el) return; if (el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; }); await reload();
+      });
+      document.getElementById('flt-mode')?.addEventListener('change', (e)=>{ applyQuickRange(e.target.value||'All'); });
+      document.getElementById('page-size')?.addEventListener('change', (e)=>{ PAGE_SIZE = Number(e.target.value||20)||20; CURRENT_PAGE=1; renderTable(); });
+      document.getElementById('prev')?.addEventListener('click', ()=>{ if (CURRENT_PAGE>1){ CURRENT_PAGE--; renderTable(); } });
+      document.getElementById('next')?.addEventListener('click', ()=>{ const pages=Math.max(1,Math.ceil(FILTERED.length/PAGE_SIZE)); if (CURRENT_PAGE<pages){ CURRENT_PAGE++; renderTable(); } });
+
+      // Tabs switcher
+      const tabs = document.querySelectorAll('.tab-btn');
+      function showSection(id){
+        ['form-approve','form3','form4','form5'].forEach(secId=>{ const s=document.getElementById(secId); if(!s) return; s.style.display = (secId===id)?'block':'none'; });
+        if (id==='form-approve'){
+          try{
+            const fromEl=document.getElementById('flt-from');
+            const toEl=document.getElementById('flt-to');
+            const d=new Date();
+            const yy=d.getFullYear();
+            const mm=String(d.getMonth()+1).padStart(2,'0');
+            const dd=String(d.getDate()).padStart(2,'0');
+            if(fromEl) fromEl.value = '2025-08-01';
+            if(toEl) toEl.value = `${yy}-${mm}-${dd}`;
+          }catch(_){ }
+          try{ reload(); }catch(_){ }
+        }
+        if (id==='form4'){ try{ renderForm4(); renderF4Pivot(); }catch(_){} }
+        if (id==='form5'){ try{ renderForm5All(); }catch(_){} }
+        if (id==='form3'){ try{ initForm3Once(); }catch(_){} }
+      }
+      tabs.forEach(b=> b.addEventListener('click', (e)=>{ e.preventDefault(); const id=b.getAttribute('data-target'); if(id) showSection(id); }));
+
+      // First load: set default date range from 01/08/2025 to today
+      try{
+        const fromEl=document.getElementById('flt-from');
+        const toEl=document.getElementById('flt-to');
+        const d=new Date();
+        const yy=d.getFullYear();
+        const mm=String(d.getMonth()+1).padStart(2,'0');
+        const dd=String(d.getDate()).padStart(2,'0');
+        if(fromEl) fromEl.value = '2025-08-01';
+        if(toEl) toEl.value = `${yy}-${mm}-${dd}`;
+      }catch(_){ }
+      reload();
+      // Defaults Form 4 & 5
+      try{ const m4=document.getElementById('f4-month'); if(m4 && !m4.value){ const d=new Date(); m4.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; } }catch(_){ }
+      try{ const m5=document.getElementById('f5a-month'); if(m5 && !m5.value){ const d=new Date(); m5.value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; } }catch(_){ }
+      document.getElementById('f4-search')?.addEventListener('click', (e)=>{ e.preventDefault(); renderForm4(); renderF4Pivot(); });
+      document.getElementById('f4-pivot-refresh')?.addEventListener('click', (e)=>{ e.preventDefault(); renderF4Pivot(); });
+      document.getElementById('f4-btn-all')?.addEventListener('click', (e)=>{ e.preventDefault(); F4_SELECTED=[]; renderForm4(); renderF4Pivot(); });
+      document.getElementById('f4-btn-linh')?.addEventListener('click', (e)=>{ e.preventDefault(); F4_SELECTED=['Linh']; renderForm4(); renderF4Pivot(); });
+      document.getElementById('f4-btn-hieu')?.addEventListener('click', (e)=>{ e.preventDefault(); F4_SELECTED=['Hiếu']; renderForm4(); renderF4Pivot(); });
+      document.getElementById('f4-mode')?.addEventListener('change', (e)=>{ applyQuickRangeForSection('form4', e.target.value||'All'); });
+      document.getElementById('f5a-search')?.addEventListener('click', (e)=>{ e.preventDefault(); renderForm5All(); });
+      document.getElementById('f5a-mode')?.addEventListener('change', (e)=>{ F5A_MODE = e.target.value || 'vertical'; renderStackedChart(F5A_LAST_ROWS); });
+      document.getElementById('f5f-mode')?.addEventListener('change', (e)=>{ applyQuickRangeForSection('form5', e.target.value||'All'); });
+      // default visible section
+      showSection('form-approve');
+    })();
+
+    async function reload(){
+      const btn = document.getElementById('btn-search'); const prev = btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang tải..."; }
+      try{
+        const params = {
+          q: document.getElementById('flt-q')?.value||'',
+          status: document.getElementById('flt-status')?.value||'',
+          from: document.getElementById('flt-from')?.value||'',
+          to: document.getElementById('flt-to')?.value||'',
+          mode: document.getElementById('flt-mode')?.value||'All',
+          page: CURRENT_PAGE,
+          pageSize: PAGE_SIZE
+        };
+        const items = await fetchReports(params);
+        ALL_ITEMS = Array.isArray(items) ? items : [];
+        FILTERED = applyFilters(ALL_ITEMS);
+        CURRENT_PAGE = 1;
+        renderTable();
+      }catch(err){
+        showToast('Lỗi tải dữ liệu.','error');
+      }finally{ if(btn){ btn.disabled=false; btn.textContent = prev||'Tra cứu'; } }
+    }
+
+    function applyQuickRange(mode){
+      const fromEl = document.getElementById('flt-from'); const toEl = document.getElementById('flt-to'); if(!fromEl||!toEl) return;
+      const d = new Date();
+      function toISO(x){ const yy=x.getFullYear(); const mm=String(x.getMonth()+1).padStart(2,'0'); const dd=String(x.getDate()).padStart(2,'0'); return `${yy}-${mm}-${dd}`; }
+      if (mode==='All'){ fromEl.value=''; toEl.value=''; reload(); return; }
+      if (mode==='Day'){ const s=new Date(d.getFullYear(), d.getMonth(), d.getDate()); const e=new Date(d.getFullYear(), d.getMonth(), d.getDate()); fromEl.value=toISO(s); toEl.value=toISO(e); reload(); return; }
+      if (mode==='Week'){ const day=d.getDay()||7; const s=new Date(d); s.setDate(d.getDate() - (day-1)); const e=new Date(s); e.setDate(s.getDate()+6); fromEl.value=toISO(s); toEl.value=toISO(e); reload(); return; }
+      if (mode==='Month'){ const s=new Date(d.getFullYear(), d.getMonth(), 1); const e=new Date(d.getFullYear(), d.getMonth()+1, 0); fromEl.value=toISO(s); toEl.value=toISO(e); reload(); return; }
+    }
+
+    function applyQuickRangeForSection(sectionId, mode){
+      // Áp dụng bộ lọc nhanh cho Form 4/5: hiện tại dùng từ-tháng/đến-tháng hoặc dùng ngày trong tháng
+      const d = new Date();
+      function toISO(x){ const yy=x.getFullYear(); const mm=String(x.getMonth()+1).padStart(2,'0'); const dd=String(x.getDate()).padStart(2,'0'); return `${yy}-${mm}-${dd}`; }
+      if (sectionId==='form4'){
+        if (mode==='All'){ /* không đổi tháng */ renderForm4(); renderF4Pivot(); return; }
+        if (mode==='Day'){ /* không có input day riêng, dùng tháng hiện tại và refresh */ renderForm4(); renderF4Pivot(); return; }
+        if (mode==='Week'){ renderForm4(); renderF4Pivot(); return; }
+        if (mode==='Month'){ const m4=document.getElementById('f4-month'); if(m4){ const d2=new Date(); m4.value = `${d2.getFullYear()}-${String(d2.getMonth()+1).padStart(2,'0')}`; } renderForm4(); renderF4Pivot(); return; }
+      }
+      if (sectionId==='form5'){
+        if (mode==='All'){ renderForm5All(); return; }
+        if (mode==='Day'){ renderForm5All(); return; }
+        if (mode==='Week'){ renderForm5All(); return; }
+        if (mode==='Month'){ const m5=document.getElementById('f5a-month'); if(m5){ const d2=new Date(); m5.value = `${d2.getFullYear()}-${String(d2.getMonth()+1).padStart(2,'0')}`; } renderForm5All(); return; }
+      }
+    }
+
+    // ===== Form 3 logic (assign)
+    let F3_INIT = false;
+    function initForm3Once(){
+      if (F3_INIT) return; F3_INIT = true;
+      // set requester fixed
+      const requesterName = 'Vũ Duy Minh';
+      const rqBy = document.getElementById('rq-by'); if (rqBy) rqBy.value = requesterName;
+      const rqEmail = document.getElementById('rq-by-email'); if (rqEmail) rqEmail.value = EMPLOYEE_EMAIL.get(requesterName) || 'minh.vu@karofi.vn';
+      const rqTime = document.getElementById('rq-time'); if (rqTime){ const d=new Date(); const dd=String(d.getDate()).padStart(2,'0'); const mm=String(d.getMonth()+1).padStart(2,'0'); const yy=d.getFullYear(); const hh=String(d.getHours()).padStart(2,'0'); const mi=String(d.getMinutes()).padStart(2,'0'); rqTime.value = `${dd}/${mm}/${yy} ${hh}:${mi}`; }
+      // fill assignee select from EMPLOYEE_EMAIL
+      try{
+        const sel = document.getElementById('f3-assignee');
+        if (sel){
+          const names = Object.keys((()=>{ const obj={}; Object.keys(EMPLOYEE_EMAIL?{...EMPLOYEE_EMAIL}:{}) ; return obj; })());
+        }
+      }catch(_){ }
+      const sel = document.getElementById('f3-assignee');
+      if (sel){
+        const options = [];
+        // Build from keys of raw mapping used earlier
+        const list = [
+          'Bùi Đặng Quốc Huy','Đào Hoàng Dương','Đỗ Quang Long','Hà Mỹ Linh','Nguyễn Hữu Thịnh','Nguyễn Văn Hiếu','Nguyễn Văn Linh','Phạm Thành Trung Kiên','Thái Thị Giang','Trần Hiếu Nghĩa','Vũ Thị Hằng','Đào Tuấn Kỳ','Đỗ Thế Cường','Lại Quốc Lộc','Lê Ngọc Ánh','Lê Thị Thanh Nhàn','Lê Thị Thảo','Lê Văn Sơn','Nguyễn Thị Hiền','Phạm Thị Minh','Vũ Duy Minh','Vũ Thị Thanh Hiền'
+        ];
+        list.forEach(n=>{ const opt=document.createElement('option'); opt.value=n; opt.textContent=n; sel.appendChild(opt); });
+      }
+      const form = document.getElementById('assign-form');
+      form?.addEventListener('submit', async (e)=>{
+        e.preventDefault();
+        const btn = form.querySelector('button[type="submit"]'); const prev = btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang gửi..."; }
+        try{
+          const title = (document.getElementById('task-name')?.value||'').trim();
+          const assignee = (document.getElementById('f3-assignee')?.value||'').trim();
+          const manhour = (document.getElementById('man-hour')?.value||'').trim();
+          const output = (document.getElementById('output')?.value||'').trim();
+          const deadline = (document.getElementById('deadline')?.value||'').trim();
+          const odoo = (document.getElementById('odoo-jira')?.value||'').trim();
+          if (!title || !assignee || !manhour || !output){ showToast('Vui lòng điền đủ trường bắt buộc.','error'); return; }
+          {
+            const headerMapAssign = {
+              header_requester: 'Người yêu cầu', field_requester: 'requester',
+              header_requesterEmail: 'Email người yêu cầu', field_requesterEmail: 'requesterEmail',
+              header_time: 'Thời gian yêu cầu', field_time: 'requestTime',
+              header_title: 'Tên tác vụ', field_title: 'title',
+              header_assignee: 'Người được giao', field_assignee: 'assignee',
+              header_manhour: 'Công chuẩn', field_manhour: 'manhour',
+              header_output: 'Đầu ra công việc', field_output: 'output',
+              header_deadline: 'Deadline', field_deadline: 'deadline',
+              header_odoo: 'Mã Odoo/Jira', field_odoo: 'odoo'
+            };
+            const p = new URLSearchParams({
+              action: 'form3_assign',
+              ...headerMapAssign,
+              requester: requesterName,
+              requesterEmail: EMPLOYEE_EMAIL.get(requesterName) || 'minh.vu@karofi.vn',
+              requestTime: (document.getElementById('rq-time')?.value||''),
+              title, assignee, manhour, output, deadline, odoo,
+              _ts: Date.now().toString()
+            });
+            async function tryPost(url){ try{ const r=await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+            async function tryPostNoCors(url){ try{ await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); return { ok:true, raw:'' }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+            async function tryGet(url){ try{ const r=await fetch(`${url}?${p.toString()}`, { method:'GET' }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+            let r = await tryPostNoCors(FORM3_ENDPOINT);
+            if (!r.ok) r = await tryPost(FORM3_ENDPOINT);
+            if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM3_ENDPOINT);
+            if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryPost(FORM3_ENDPOINT.replace('/webhook-test/','/webhook/'));
+            if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(FORM3_ENDPOINT.replace('/webhook-test/','/webhook/'));
+            if (!r.ok) throw new Error(r.raw||'Gửi thất bại');
+          }
+          showToast('Đã giao việc.','success');
+          try{ form.reset(); }catch(_){ }
+          // reset requester fixed fields
+          if (rqBy) rqBy.value = requesterName; if (rqEmail) rqEmail.value = EMPLOYEE_EMAIL.get(requesterName) || 'minh.vu@karofi.vn';
+        }catch(err){ showToast('Giao việc thất bại.','error'); }
+        finally{ if(btn){ btn.disabled=false; btn.textContent = prev||'Giao việc'; } }
+      });
+    }
+  </script>
+</body>
+</html>
+
+
