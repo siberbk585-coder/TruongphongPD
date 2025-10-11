@@ -54,9 +54,9 @@
   <main class="w-full p-4 md:p-6">
     <div class="mb-4 flex items-center gap-2 flex-wrap">
       <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form-approve">Duyệt báo cáo</button>
-      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form3" style="display:none">Giao việc - In progress</button>
-      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form4" style="display:none">Bảng theo dõi-In progress</button>
-      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form5" style="display:none">Tất cả tác vụ-In progress</button>
+      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form3">Giao việc - In progress</button>
+      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form4">Bảng theo dõi-In progress</button>
+      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form5">Tất cả tác vụ-In progress</button>
     </div>
     <section id="form-approve" class="bg-white p-4 md:p-6 rounded-xl shadow-md">
       <div class="flex items-center justify-between mb-4">
@@ -120,22 +120,21 @@
       </div>
 
       <div class="mt-2 overflow-auto border border-gray-200 rounded-lg">
-        <table class="w-full text-sm table-zebra table-vdiv" style="table-layout: auto; width: 100%;">
+        <table class="min-w-[1100px] w-full text-sm table-zebra table-vdiv">
           <thead class="bg-gradient-to-r from-blue-100 to-blue-50 sticky top-0">
             <tr class="text-left text-gray-700">
-              <th class="px-3 py-2">Mã báo cáo</th>
-              <th class="px-3 py-2">Tiêu đề</th>
-              <th class="px-3 py-2">Người lập</th>
-              <th class="px-3 py-2">Ngày nộp</th>
-              <th class="px-3 py-2">Hạn mong muốn</th>
-              <th class="px-3 py-2">Hạn đánh giá</th>
-              <th class="px-3 py-2">Kết luận</th>
-              <th class="px-3 py-2">Trạng thái</th>
-              <th class="px-3 py-2">Hành động</th>
+              <th class="px-3 py-2 min-w-[120px]">Mã báo cáo</th>
+              <th class="px-3 py-2 min-w-[260px]">Tiêu đề</th>
+              <th class="px-3 py-2 min-w-[160px]">Người lập</th>
+              <th class="px-3 py-2 min-w-[140px]">Ngày nộp</th>
+              <th class="px-3 py-2 min-w-[140px]">Hạn mong muốn</th>
+              <th class="px-3 py-2 min-w-[140px]">Hạn đánh giá</th>
+              <th class="px-3 py-2 min-w-[120px]">Trạng thái</th>
+              <th class="px-3 py-2 min-w-[220px]">Hành động</th>
             </tr>
           </thead>
           <tbody id="list-body" class="divide-y divide-gray-100">
-            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="7">Chưa có dữ liệu</td></tr>
           </tbody>
         </table>
       </div>
@@ -433,9 +432,9 @@
     // ===== Config (đổi sang endpoint thật khi sẵn sàng)
     const WEBHOOK_TEST = 'https://iatzhxxuk.tino.page/webhook/1df40252-6bff-4392-bb1a-5ae72ee748d1';
     const WEBHOOK_PROD = WEBHOOK_TEST.replace('/webhook-test/','/webhook/');
-    const REPORTS_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/2127868f-559a-494e-a3b9-e41223982f5b'; // GET: action=reports_query
+    const REPORTS_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/1df40252-6bff-4392-bb1a-5ae72ee748d1'; // GET: action=reports_query
     const FORM5_LIST_URL = WEBHOOK_TEST;    // GET: action=form5_list | form5_all | form5_all_stats
-    const FORM_ACTION_URL = 'https://iatzhxxuk.tino.page/webhook/0f7660ab-3ea7-4966-a0aa-5c8af23b02a5';   // POST: action=report_approve|report_reject|report_request_changes
+    const FORM_ACTION_URL = 'https://iatzhxxuk.tino.page/webhook/f27938ca-886e-429a-af40-c27a96964920';   // POST: action=report_approve|report_reject|report_request_changes
     const FORM3_ENDPOINT = 'https://iatzhxxuk.tino.page/webhook/21b742a9-a6b0-4393-9325-bfa470db5917'; // POST: form3_assign
     // Đồng bộ endpoint theo "Nội bộ 28.8.html"
     const FORM4_LOOKUP_URL = 'https://iatzhxxuk.tino.page/webhook/ddc1264c-85be-4b63-98a6-267103685117'; // action=form1_lookup
@@ -533,8 +532,6 @@
         field_wishDate: 'wishDate',
         header_dueDate: 'Hạn đánh giá',
         field_dueDate: 'dueDate',
-        header_conclusion: 'Kết luận',
-        field_conclusion: 'conclusion',
         header_status: 'Trạng thái',
         field_status: 'status',
         header_reportUrl: 'Liên kết báo cáo',
@@ -591,13 +588,8 @@
       async function fetchJson(url){ const full=`${url}?${qs.toString()}`; const r = await fetch(full, { method:'GET' }); const txt = await r.text(); let parsed=null; try{ parsed=JSON.parse(txt);}catch{} setDebug(full, txt.slice(0,4000), null); return { ok:r.ok, parsed, raw:txt, status:r.status, fullUrl:full }; }
       function pickRowsDeep(json){ if(!json) return []; if(Array.isArray(json)) return json; const c=['items','data','rows','list','result','records']; for(const k of c){ if(Array.isArray(json?.[k])) return json[k]; } try{ const q=[json]; const seen=new Set(); while(q.length){ const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur); for(const v of Object.values(cur)){ if(Array.isArray(v) && v.length && typeof v[0]==='object') return v; if(v&&typeof v==='object') q.push(v); } } }catch(_){} return []; }
       let resp = await fetchJson(REPORTS_QUERY_URL);
-      if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) {
-        resp = await fetchJson(REPORTS_QUERY_URL.replace('/webhook-test/','/webhook/'));
-      }
-      if (!resp.ok) {
-        console.error('API request failed:', resp.status, resp.raw);
-        return [];
-      }
+      if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) resp = await fetchJson(REPORTS_QUERY_URL.replace('/webhook-test/','/webhook/'));
+      if (!resp.ok) return [];
       const rows = pickRowsDeep(resp.parsed ?? (resp.raw? JSON.parse(resp.raw): null));
       function normalizeStatus(val){
         const v = String(val||'').trim().toLowerCase();
@@ -631,7 +623,6 @@
         const submitDate = getFrom(lx,'submitDate','ngày nộp','date','ngaynop','ngaynộp','ngaynộp');
         const wishDate = getFrom(lx,'wishDate','hạn mong muốn','hanmongmuon','wish');
         const dueDate = getFrom(lx,'dueDate','deadline','hạn đánh giá');
-        const conclusion = getFrom(lx,'conclusion','kết luận','ketluan','result','resultado');
         const statusRaw = getFrom(lx,'status','trạng thái','trangthai');
         const reportUrl = getFrom(lx,'reportUrl','liên kết báo cáo','url','link','href');
         return {
@@ -643,7 +634,6 @@
           submitDate: submitDate || '',
           wishDate: wishDate || '',
           dueDate: dueDate || '',
-          conclusion: conclusion || '',
           status: normalizeStatus(statusRaw || 'Pending'),
           reportUrl: reportUrl || ''
         };
@@ -679,7 +669,7 @@
     function renderTable(){
       const body = document.getElementById('list-body'); if (!body) return;
       const total = FILTERED.length; updatePager(total);
-      if (!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>'; return; }
+      if (!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="7">Chưa có dữ liệu</td></tr>'; return; }
       const start = (CURRENT_PAGE-1)*PAGE_SIZE; const end = Math.min(total, start+PAGE_SIZE);
       const pageItems = FILTERED.slice(start,end);
       const today = new Date(); const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -707,7 +697,6 @@
             <td class="px-3 py-2">${fmtDmy(it.submitDate)}</td>
             <td class="px-3 py-2">${fmtDmy(it.wishDate)}</td>
             <td class="px-3 py-2">${fmtDmy(it.dueDate)}</td>
-            <td class="px-3 py-2">${it.conclusion || ''}</td>
             <td class="px-3 py-2">${statusBadge}</td>
             <td class="px-3 py-2">
               <div class="flex items-center gap-2">
@@ -1089,22 +1078,7 @@
     })();
 
     async function reload(){
-      const btn = document.getElementById('btn-search'); 
-      const prev = btn ? btn.textContent : 'Tra cứu'; 
-      if(btn){ 
-        btn.disabled = true; 
-        btn.innerHTML = "<span class='spinner mr-2'></span>Đang tải..."; 
-      }
-      
-      // Timeout để đảm bảo nút không bị treo
-      const timeoutId = setTimeout(() => {
-        if(btn && btn.disabled) {
-          btn.disabled = false; 
-          btn.innerHTML = prev;
-          showToast('Timeout: Quá thời gian chờ tải dữ liệu', 'error');
-        }
-      }, 30000); // 30 giây timeout
-      
+      const btn = document.getElementById('btn-search'); const prev = btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang tải..."; }
       try{
         const params = {
           q: document.getElementById('flt-q')?.value||'',
@@ -1120,17 +1094,9 @@
         FILTERED = applyFilters(ALL_ITEMS);
         CURRENT_PAGE = 1;
         renderTable();
-        clearTimeout(timeoutId);
       }catch(err){
-        console.error('Lỗi tải dữ liệu:', err);
         showToast('Lỗi tải dữ liệu.','error');
-        clearTimeout(timeoutId);
-      }finally{ 
-        if(btn){ 
-          btn.disabled = false; 
-          btn.innerHTML = prev; 
-        } 
-      }
+      }finally{ if(btn){ btn.disabled=false; btn.textContent = prev||'Tra cứu'; } }
     }
 
     function applyQuickRange(mode){
