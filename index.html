@@ -54,9 +54,7 @@
   <main class="w-full p-4 md:p-6">
     <div class="mb-4 flex items-center gap-2 flex-wrap">
       <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form-approve">Duyệt báo cáo</button>
-      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form3">Giao việc - In progress</button>
-      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form4">Bảng theo dõi-In progress</button>
-      <button class="px-3 py-1 rounded-full border border-blue-200 bg-blue-50/30 text-primary-blue hover:bg-blue-50 tab-btn" data-target="form5">Tất cả tác vụ-In progress</button>
+        
     </div>
     <section id="form-approve" class="bg-white p-4 md:p-6 rounded-xl shadow-md">
       <div class="flex items-center justify-between mb-4">
@@ -130,11 +128,12 @@
               <th class="px-3 py-2 min-w-[140px]">Hạn mong muốn</th>
               <th class="px-3 py-2 min-w-[140px]">Hạn đánh giá</th>
               <th class="px-3 py-2 min-w-[120px]">Trạng thái</th>
+              <th class="px-3 py-2 min-w-[160px]">Kết luận</th>
               <th class="px-3 py-2 min-w-[220px]">Hành động</th>
             </tr>
           </thead>
           <tbody id="list-body" class="divide-y divide-gray-100">
-            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="7">Chưa có dữ liệu</td></tr>
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>
           </tbody>
         </table>
       </div>
@@ -159,8 +158,8 @@
       </div>
     </section>
 
-    <!-- Form 3 · Giao việc (Mock + Webhook mapping) -->
-    <section id="form3" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
+    <!-- Form 3 · Giao việc (Hidden by request) -->
+    <section id="form3" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none; visibility:hidden">
       <div class="flex items-center justify-between mb-4">
         <div class="section-title">
           <h2 class="text-xl font-semibold text-blue-800">Giao việc</h2>
@@ -227,8 +226,8 @@
       </form>
     </section>
     
-    <!-- Form 4 · Bảng theo dõi (Mock) -->
-    <section id="form4" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
+    <!-- Form 4 · Bảng theo dõi (Hidden by request) -->
+    <section id="form4" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none; visibility:hidden">
       <div class="flex items-center justify-between mb-4">
         <div class="section-title">
           <h2 class="text-xl font-semibold text-blue-800">Bảng theo dõi</h2>
@@ -301,8 +300,8 @@
       </div>
     </section>
 
-    <!-- Form 5 · Tất cả tác vụ (Mock) -->
-    <section id="form5" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
+    <!-- Form 5 · Tất cả tác vụ (Hidden by request) -->
+    <section id="form5" class="mt-6 bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none; visibility:hidden">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-blue-800">Tất cả tác vụ</h2>
       </div>
@@ -432,7 +431,7 @@
     // ===== Config (đổi sang endpoint thật khi sẵn sàng)
     const WEBHOOK_TEST = 'https://iatzhxxuk.tino.page/webhook/1df40252-6bff-4392-bb1a-5ae72ee748d1';
     const WEBHOOK_PROD = WEBHOOK_TEST.replace('/webhook-test/','/webhook/');
-    const REPORTS_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/1df40252-6bff-4392-bb1a-5ae72ee748d1'; // GET: action=reports_query
+    const REPORTS_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/2127868f-559a-494e-a3b9-e41223982f5b'; // GET: action=reports_query
     const FORM5_LIST_URL = WEBHOOK_TEST;    // GET: action=form5_list | form5_all | form5_all_stats
     const FORM_ACTION_URL = 'https://iatzhxxuk.tino.page/webhook/f27938ca-886e-429a-af40-c27a96964920';   // POST: action=report_approve|report_reject|report_request_changes
     const FORM3_ENDPOINT = 'https://iatzhxxuk.tino.page/webhook/21b742a9-a6b0-4393-9325-bfa470db5917'; // POST: form3_assign
@@ -534,6 +533,8 @@
         field_dueDate: 'dueDate',
         header_status: 'Trạng thái',
         field_status: 'status',
+        header_conclusion: 'Kết luận',
+        field_conclusion: 'conclusion',
         header_reportUrl: 'Liên kết báo cáo',
         field_reportUrl: 'reportUrl'
       };
@@ -624,6 +625,7 @@
         const wishDate = getFrom(lx,'wishDate','hạn mong muốn','hanmongmuon','wish');
         const dueDate = getFrom(lx,'dueDate','deadline','hạn đánh giá');
         const statusRaw = getFrom(lx,'status','trạng thái','trangthai');
+        const conclusion = getFrom(lx,'conclusion','kết luận','ketluan');
         const reportUrl = getFrom(lx,'reportUrl','liên kết báo cáo','url','link','href');
         return {
           id: id || code || '',
@@ -635,6 +637,7 @@
           wishDate: wishDate || '',
           dueDate: dueDate || '',
           status: normalizeStatus(statusRaw || 'Pending'),
+          conclusion: conclusion || '',
           reportUrl: reportUrl || ''
         };
       });
@@ -669,7 +672,7 @@
     function renderTable(){
       const body = document.getElementById('list-body'); if (!body) return;
       const total = FILTERED.length; updatePager(total);
-      if (!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="7">Chưa có dữ liệu</td></tr>'; return; }
+      if (!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>'; return; }
       const start = (CURRENT_PAGE-1)*PAGE_SIZE; const end = Math.min(total, start+PAGE_SIZE);
       const pageItems = FILTERED.slice(start,end);
       const today = new Date(); const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -698,6 +701,7 @@
             <td class="px-3 py-2">${fmtDmy(it.wishDate)}</td>
             <td class="px-3 py-2">${fmtDmy(it.dueDate)}</td>
             <td class="px-3 py-2">${statusBadge}</td>
+            <td class="px-3 py-2">${it.conclusion?String(it.conclusion):''}</td>
             <td class="px-3 py-2">
               <div class="flex items-center gap-2">
                 <button class="px-3 py-1 rounded-full text-white font-semibold bg-primary-blue hover:brightness-105 act-approve ${disabled}" data-id="${it.id}">Duyệt</button>
