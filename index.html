@@ -433,7 +433,7 @@
     const WEBHOOK_PROD = WEBHOOK_TEST.replace('/webhook-test/','/webhook/');
     const REPORTS_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/2127868f-559a-494e-a3b9-e41223982f5b'; // GET: action=reports_query
     const FORM5_LIST_URL = WEBHOOK_TEST;    // GET: action=form5_list | form5_all | form5_all_stats
-    const FORM_ACTION_URL = 'https://iatzhxxuk.tino.page/webhook/f27938ca-886e-429a-af40-c27a96964920';   // POST: action=report_approve|report_reject|report_request_changes
+    const FORM_ACTION_URL = 'https://iatzhxxuk.tino.page/webhook/0f7660ab-3ea7-4966-a0aa-5c8af23b02a5';   // POST: action=report_approve|report_reject|report_request_changes
     const FORM3_ENDPOINT = 'https://iatzhxxuk.tino.page/webhook/21b742a9-a6b0-4393-9325-bfa470db5917'; // POST: form3_assign
     // Đồng bộ endpoint theo "Nội bộ 28.8.html"
     const FORM4_LOOKUP_URL = 'https://iatzhxxuk.tino.page/webhook/ddc1264c-85be-4b63-98a6-267103685117'; // action=form1_lookup
@@ -587,11 +587,34 @@
       const qs = new URLSearchParams({ action:'reports_query', ...headerMapReports, ...qParams, ...dateParams, ...statusParams, ...modeParams, ...pageParams, _ts: Date.now().toString() });
       function setDebug(url, raw, first){ try{ const u=document.getElementById('dbg-url'); if(u) u.textContent = url; const t=document.getElementById('dbg-raw'); if(t) t.value = raw||''; const f=document.getElementById('dbg-row'); if(f) f.value = first? JSON.stringify(first,null,2):''; }catch(_){ } }
       async function fetchJson(url){ const full=`${url}?${qs.toString()}`; const r = await fetch(full, { method:'GET' }); const txt = await r.text(); let parsed=null; try{ parsed=JSON.parse(txt);}catch{} setDebug(full, txt.slice(0,4000), null); return { ok:r.ok, parsed, raw:txt, status:r.status, fullUrl:full }; }
-      function pickRowsDeep(json){ if(!json) return []; if(Array.isArray(json)) return json; const c=['items','data','rows','list','result','records']; for(const k of c){ if(Array.isArray(json?.[k])) return json[k]; } try{ const q=[json]; const seen=new Set(); while(q.length){ const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur); for(const v of Object.values(cur)){ if(Array.isArray(v) && v.length && typeof v[0]==='object') return v; if(v&&typeof v==='object') q.push(v); } } }catch(_){} return []; }
+      function safeParse(txt){ try{ return JSON.parse(txt); }catch(_){ return null; } }
+      // Gom tất cả các mảng đối tượng xuất hiện trong JSON thay vì chỉ lấy mảng đầu tiên
+      function collectRowsDeep(json){
+        if(!json) return [];
+        if(Array.isArray(json)) return json;
+        const out=[]; const seen=new Set(); const q=[json];
+        try{
+          while(q.length){
+            const cur=q.shift(); if(!cur||typeof cur!=='object'||seen.has(cur)) continue; seen.add(cur);
+            for(const v of Object.values(cur)){
+              if(Array.isArray(v)){
+                if(v.length && typeof v[0]==='object') out.push(...v);
+                // vẫn duyệt sâu bên trong các phần tử mảng
+                v.forEach(x=>{ if(x && typeof x==='object') q.push(x); });
+                continue;
+              }
+              if(v && typeof v==='object') q.push(v);
+            }
+          }
+        }catch(_){ }
+        // nếu không tìm thấy mảng, nhưng json là object đơn lẻ có key-value, trả về [json]
+        return out.length ? out : (typeof json==='object' ? [json] : []);
+      }
       let resp = await fetchJson(REPORTS_QUERY_URL);
       if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))) resp = await fetchJson(REPORTS_QUERY_URL.replace('/webhook-test/','/webhook/'));
       if (!resp.ok) return [];
-      const rows = pickRowsDeep(resp.parsed ?? (resp.raw? JSON.parse(resp.raw): null));
+      const baseJson = resp.parsed ?? safeParse(resp.raw);
+      const rows = collectRowsDeep(baseJson);
       function normalizeStatus(val){
         const v = String(val||'').trim().toLowerCase();
         if (!v) return 'Pending';
@@ -1025,7 +1048,10 @@
       document.getElementById('btn-reset')?.addEventListener('click', async (e)=>{
         e.preventDefault(); ['flt-q','flt-status','flt-from','flt-to'].forEach(id=>{ const el=document.getElementById(id); if(!el) return; if (el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; }); await reload();
       });
-      document.getElementById('flt-mode')?.addEventListener('change', (e)=>{ applyQuickRange(e.target.value||'All'); });
+      document.getElementById('flt-mode')?.addEventListener('change', (e)=>{ applyQuickRangeLocal(e.target.value||'All'); });
+      // Lọc thời gian tại chỗ khi thay đổi ngày From/To
+      document.getElementById('flt-from')?.addEventListener('change', ()=>{ filterTimeInPlace(); });
+      document.getElementById('flt-to')?.addEventListener('change', ()=>{ filterTimeInPlace(); });
       document.getElementById('page-size')?.addEventListener('change', (e)=>{ PAGE_SIZE = Number(e.target.value||20)||20; CURRENT_PAGE=1; renderTable(); });
       document.getElementById('prev')?.addEventListener('click', ()=>{ if (CURRENT_PAGE>1){ CURRENT_PAGE--; renderTable(); } });
       document.getElementById('next')?.addEventListener('click', ()=>{ const pages=Math.max(1,Math.ceil(FILTERED.length/PAGE_SIZE)); if (CURRENT_PAGE<pages){ CURRENT_PAGE++; renderTable(); } });
@@ -1111,6 +1137,26 @@
       if (mode==='Day'){ const s=new Date(d.getFullYear(), d.getMonth(), d.getDate()); const e=new Date(d.getFullYear(), d.getMonth(), d.getDate()); fromEl.value=toISO(s); toEl.value=toISO(e); reload(); return; }
       if (mode==='Week'){ const day=d.getDay()||7; const s=new Date(d); s.setDate(d.getDate() - (day-1)); const e=new Date(s); e.setDate(s.getDate()+6); fromEl.value=toISO(s); toEl.value=toISO(e); reload(); return; }
       if (mode==='Month'){ const s=new Date(d.getFullYear(), d.getMonth(), 1); const e=new Date(d.getFullYear(), d.getMonth()+1, 0); fromEl.value=toISO(s); toEl.value=toISO(e); reload(); return; }
+    }
+
+    // Lọc thời gian tại chỗ (không gọi API), áp dụng trên ALL_ITEMS hiện có
+    function filterTimeInPlace(){
+      try{
+        FILTERED = applyFilters(ALL_ITEMS);
+        CURRENT_PAGE = 1;
+        renderTable();
+      }catch(_){ }
+    }
+
+    // Thiết lập nhanh khoảng thời gian và lọc tại chỗ
+    function applyQuickRangeLocal(mode){
+      const fromEl = document.getElementById('flt-from'); const toEl = document.getElementById('flt-to'); if(!fromEl||!toEl) return;
+      const d = new Date();
+      function toISO(x){ const yy=x.getFullYear(); const mm=String(x.getMonth()+1).padStart(2,'0'); const dd=String(x.getDate()).padStart(2,'0'); return `${yy}-${mm}-${dd}`; }
+      if (mode==='All'){ fromEl.value=''; toEl.value=''; filterTimeInPlace(); return; }
+      if (mode==='Day'){ const s=new Date(d.getFullYear(), d.getMonth(), d.getDate()); const e=new Date(d.getFullYear(), d.getMonth(), d.getDate()); fromEl.value=toISO(s); toEl.value=toISO(e); filterTimeInPlace(); return; }
+      if (mode==='Week'){ const day=d.getDay()||7; const s=new Date(d); s.setDate(d.getDate() - (day-1)); const e=new Date(s); e.setDate(s.getDate()+6); fromEl.value=toISO(s); toEl.value=toISO(e); filterTimeInPlace(); return; }
+      if (mode==='Month'){ const s=new Date(d.getFullYear(), d.getMonth(), 1); const e=new Date(d.getFullYear(), d.getMonth()+1, 0); fromEl.value=toISO(s); toEl.value=toISO(e); filterTimeInPlace(); return; }
     }
 
     function applyQuickRangeForSection(sectionId, mode){
