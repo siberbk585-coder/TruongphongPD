@@ -73,6 +73,7 @@
           <label class="block text-sm text-gray-700 mb-1">Trạng thái</label>
           <select id="flt-status" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white">
             <option value="Pending" selected>Chờ phê duyệt</option>
+            <option value="Pending2">Trưởng nhóm Review</option>
             <option value="Approved">Done</option>
             <option value="TestBen">Test bền</option>
             <option value="ChangesRequested">Đang sửa</option>
@@ -584,7 +585,7 @@
       const offset = (pg-1)*ps;
       Object.assign(pageParams, { page:String(pg), page_index:String(pg), pageNumber:String(pg), pageSize:String(ps), limit:String(ps), size:String(ps), per_page:String(ps), offset:String(offset) });
 
-      const qs = new URLSearchParams({ action:'reports_query', ...headerMapReports, ...qParams, ...dateParams, ...statusParams, ...modeParams, ...pageParams, _ts: Date.now().toString() });
+      const qs = new URLSearchParams({ action:'reports_query', ...headerMapReports, _ts: Date.now().toString() });
       function setDebug(url, raw, first){ try{ const u=document.getElementById('dbg-url'); if(u) u.textContent = url; const t=document.getElementById('dbg-raw'); if(t) t.value = raw||''; const f=document.getElementById('dbg-row'); if(f) f.value = first? JSON.stringify(first,null,2):''; }catch(_){ } }
       async function fetchJson(url){ const full=`${url}?${qs.toString()}`; const r = await fetch(full, { method:'GET' }); const txt = await r.text(); let parsed=null; try{ parsed=JSON.parse(txt);}catch{} setDebug(full, txt.slice(0,4000), null); return { ok:r.ok, parsed, raw:txt, status:r.status, fullUrl:full }; }
       function safeParse(txt){ try{ return JSON.parse(txt); }catch(_){ return null; } }
@@ -618,6 +619,11 @@
       function normalizeStatus(val){
         const v = String(val||'').trim().toLowerCase();
         if (!v) return 'Pending';
+        // Trưởng nhóm Review -> Pending2
+        if ([
+          'pending2','pending 2','cho phe duyet 2','chờ phê duyệt 2','cpd2',
+          'truong nhom review','trưởng nhóm review','truongnhomreview','trưởngnhómreview'
+        ].includes(v)) return 'Pending2';
         if (['pending','cho phe duyet','chờ phê duyệt','cho_duyet','cho'].includes(v)) return 'Pending';
         if (['approved','done','hoan thanh','hoàn thành','da duyet','đã duyệt'].includes(v)) return 'Approved';
         if (['changesrequested','dang sua','đang sửa','yeu cau bo sung','yêu cầu bổ sung','sua'].includes(v)) return 'ChangesRequested';
@@ -664,8 +670,21 @@
           reportUrl: reportUrl || ''
         };
       });
-      try{ setDebug(resp.fullUrl||'', resp.raw||'', normalizedRows[0]||null); }catch(_){ }
-      return normalizedRows;
+      // Loại bỏ bản ghi rỗng và bản ghi trùng lặp để tránh hiển thị hàng trống
+      const isMeaningful = (r)=>{
+        const hasId = String(r?.id||'').trim().length>0;
+        const hasMain = ['code','title','reporter','reportUrl'].some(k=> String(r?.[k]||'').trim().length>0);
+        return hasId || hasMain;
+      };
+      const seenKeys = new Set();
+      const cleanedRows = normalizedRows.filter(r=>{
+        if (!isMeaningful(r)) return false;
+        const key = [r.id,r.code,r.title,r.reporter,r.submitDate,r.reportUrl]
+          .map(x=> String(x||'').trim().toLowerCase()).join('|');
+        if (seenKeys.has(key)) return false; seenKeys.add(key); return true;
+      });
+      try{ setDebug(resp.fullUrl||'', resp.raw||'', cleanedRows[0]||null); }catch(_){ }
+      return cleanedRows;
     }
 
     // ===== Render
@@ -709,12 +728,13 @@
         }
         const statusBadge = ({
           'Pending': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Chờ phê duyệt</span>',
+          'Pending2': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">Trưởng nhóm Review</span>',
           'Approved': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">Done</span>',
           'ChangesRequested': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">Đang sửa</span>',
           'TestBen': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">Test bền</span>',
           'Rejected': '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">Từ chối</span>'
         })[String(it.status||'Pending')] || String(it.status||'');
-        const disabled = it.status!=='Pending' ? 'opacity-50 pointer-events-none' : '';
+        const disabled = (String(it.status||'')!=='Pending' && String(it.status||'')!=='Pending2') ? 'opacity-50 pointer-events-none' : '';
         return `
           <tr class="${trClass}">
             <td class="px-3 py-2"><a href="#" class="text-blue-700 underline report-link" data-id="${it.id}">${it.code}</a></td>
