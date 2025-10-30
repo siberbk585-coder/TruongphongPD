@@ -71,9 +71,6 @@
     <section id="form-approve" class="bg-white p-4 md:p-6 rounded-xl shadow-md">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-blue-800">Danh sách báo cáo chờ duyệt</h2>
-        <div class="flex items-center gap-2 text-xs text-gray-500">
-          <button id="btn-debug" class="px-2 py-0.5 rounded border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100">Debug</button>
-        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
@@ -101,32 +98,7 @@
           <input id="flt-to" type="date" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white" />
         </div>
         <div class="md:col-span-3 flex items-end gap-2">
-          <div class="flex items-center gap-2">
-            <label class="text-xs text-gray-600">Chế độ</label>
-            <select id="flt-mode" class="border border-blue-200 rounded bg-white text-sm px-2 py-1">
-              <option value="All" selected>Tất cả</option>
-              <option value="Day">Ngày</option>
-              <option value="Week">Tuần</option>
-              <option value="Month">Tháng</option>
-            </select>
-          </div>
           <button id="btn-search" class="submit-btn px-4 py-2 text-white font-semibold">Tra cứu</button>
-          <button id="btn-reset" class="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Xóa lọc</button>
-        </div>
-      </div>
-
-      <div id="debug-panel" class="mt-2 p-2 border border-amber-300 rounded bg-amber-50 text-xs" style="display:none">
-        <div class="font-semibold mb-1">Debug API</div>
-        <div class="mb-1">URL: <span id="dbg-url" class="break-all"></span></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <div>
-            <div class="text-gray-600 mb-1">Response (raw)</div>
-            <textarea id="dbg-raw" class="w-full h-40 border rounded p-1"></textarea>
-          </div>
-          <div>
-            <div class="text-gray-600 mb-1">First row (normalized)</div>
-            <textarea id="dbg-row" class="w-full h-40 border rounded p-1"></textarea>
-          </div>
         </div>
       </div>
 
@@ -139,14 +111,15 @@
               <th class="px-3 py-2 min-w-[260px]">Tiêu đề</th>
               <th class="px-3 py-2 min-w-[160px]">Kết luận</th>
               <th class="px-3 py-2 min-w-[160px]">Người lập</th>
+              <th class="px-3 py-2 min-w-[160px]">Nhận xét PIC</th>
+              <th class="px-3 py-2 min-w-[220px]">Nhận xét Leader</th>
               <th class="px-3 py-2 min-w-[140px]">Ngày nộp</th>
               <th class="px-3 py-2 min-w-[140px]">Hạn mong muốn</th>
               <th class="px-3 py-2 min-w-[120px]">Trạng thái</th>
-              <th class="px-3 py-2 min-w-[220px]">Nhận xét Leader</th>
             </tr>
           </thead>
           <tbody id="list-body" class="divide-y divide-gray-100">
-            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="10">Chưa có dữ liệu</td></tr>
           </tbody>
         </table>
       </div>
@@ -175,24 +148,6 @@
     <section id="form-approve-nctn" class="bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-rose-800">Danh sách báo cáo NCTN chờ duyệt</h2>
-        <div class="flex items-center gap-2 text-xs text-gray-500">
-          <button id="nctn-btn-debug" class="px-2 py-0.5 rounded border border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100">Debug</button>
-        </div>
-      </div>
-
-      <div id="nctn-debug-panel" class="mt-2 p-2 border border-amber-300 rounded bg-amber-50 text-xs" style="display:none">
-        <div class="font-semibold mb-1">Debug API</div>
-        <div class="mb-1">URL: <span id="nctn-dbg-url" class="break-all"></span></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <div>
-            <div class="text-gray-600 mb-1">Response (raw)</div>
-            <textarea id="nctn-dbg-raw" class="w-full h-40 border rounded p-1"></textarea>
-          </div>
-          <div>
-            <div class="text-gray-600 mb-1">First row (normalized)</div>
-            <textarea id="nctn-dbg-row" class="w-full h-40 border rounded p-1"></textarea>
-          </div>
-        </div>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
@@ -220,17 +175,7 @@
           <input id="nctn-flt-to" type="date" class="w-full border border-rose-300 rounded-lg bg-rose-50 p-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white" />
         </div>
         <div class="md:col-span-3 flex items-end gap-2">
-          <div class="flex items-center gap-2">
-            <label class="text-xs text-gray-600">Chế độ</label>
-            <select id="nctn-flt-mode" class="border border-rose-200 rounded bg-white text-sm px-2 py-1">
-              <option value="All" selected>Tất cả</option>
-              <option value="Day">Ngày</option>
-              <option value="Week">Tuần</option>
-              <option value="Month">Tháng</option>
-            </select>
-          </div>
           <button id="nctn-btn-search" class="submit-btn px-4 py-2 text-white font-semibold">Tra cứu</button>
-          <button id="nctn-btn-reset" class="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Xóa lọc</button>
         </div>
       </div>
 
@@ -243,14 +188,15 @@
               <th class="px-3 py-2 min-w-[260px]">Tiêu đề</th>
               <th class="px-3 py-2 min-w-[160px]">Kết luận</th>
               <th class="px-3 py-2 min-w-[160px]">Người lập</th>
+              <th class="px-3 py-2 min-w-[160px]">Nhận xét PIC</th>
+              <th class="px-3 py-2 min-w-[220px]">Nhận xét Leader</th>
               <th class="px-3 py-2 min-w-[140px]">Ngày nộp</th>
               <th class="px-3 py-2 min-w-[140px]">Hạn mong muốn</th>
               <th class="px-3 py-2 min-w-[120px]">Trạng thái</th>
-              <th class="px-3 py-2 min-w-[220px]">Nhận xét Leader</th>
             </tr>
           </thead>
           <tbody id="nctn-list-body" class="divide-y divide-gray-100">
-            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>
+            <tr><td class="px-3 py-3 text-center text-gray-500" colspan="10">Chưa có dữ liệu</td></tr>
           </tbody>
         </table>
       </div>
@@ -553,31 +499,41 @@
       </div>
       
       <div id="stats-content" class="hidden overflow-y-auto flex-1 pr-2">
-        <!-- Thông tin cơ bản -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- a. Thông tin cơ bản -->
+        <div class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3 text-lg">a. Thông tin cơ bản</h4>
           <div class="bg-blue-50 p-4 rounded-lg">
-            <h4 class="font-semibold text-blue-800 mb-2">Thông tin tác vụ</h4>
-            <div class="space-y-1 text-sm">
-              <div><span class="font-medium">Mã tác vụ:</span> <span id="stats-task-code" class="text-blue-700"></span></div>
-              <div><span class="font-medium">Kết luận:</span> <span id="stats-conclusion" class="text-blue-700"></span></div>
-            </div>
-          </div>
-          <div class="bg-green-50 p-4 rounded-lg">
-            <h4 class="font-semibold text-green-800 mb-2">Thống kê hạng mục</h4>
-            <div class="grid grid-cols-2 gap-2 text-sm">
-              <div><span class="font-medium">Tổng TCKT:</span> <span id="stats-total-tckt" class="text-green-700"></span></div>
-              <div><span class="font-medium">OK:</span> <span id="stats-ok" class="text-green-700"></span></div>
-              <div><span class="font-medium">NG:</span> <span id="stats-ng" class="text-red-600"></span></div>
-              <div><span class="font-medium">Test bền:</span> <span id="stats-test-ben" class="text-blue-600"></span></div>
-              <div><span class="font-medium">Không đánh giá:</span> <span id="stats-not-eval" class="text-gray-600"></span></div>
-              <div><span class="font-medium">Thêm:</span> <span id="stats-additional" class="text-purple-600"></span></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div><span class="font-medium">Mã:</span> <span id="stats-ma" class="text-blue-700"></span></div>
+              <div class="md:col-span-2"><span class="font-medium">Task Name:</span> <span id="stats-task-name" class="text-blue-700"></span></div>
+              <div class="md:col-span-3"><span class="font-medium">Kết luận (trang bìa):</span> <span id="stats-conclusion" class="text-blue-700"></span></div>
             </div>
           </div>
         </div>
 
-        <!-- Test bền -->
-        <div id="stats-test-ben-section" class="mb-6">
-          <h4 class="font-semibold text-gray-800 mb-3">Test bền</h4>
+        <!-- b. Công chuẩn -->
+        <div class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3 text-lg">b. Công chuẩn</h4>
+          <div class="bg-green-50 p-4 rounded-lg">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+              <div><span class="font-medium">Công ước lượng:</span> <span id="stats-cong-uoc-luong" class="text-green-700"></span></div>
+              <div><span class="font-medium">Công chuẩn đầy đủ:</span> <span id="stats-cong-chuan-day-du" class="text-green-700"></span></div>
+              <div><span class="font-medium">Công chuẩn thực tế:</span> <span id="stats-cong-chuan-thuc-te" class="text-green-700"></span></div>
+              <div><span class="font-medium">Công chuẩn phần PTC:</span> <span id="stats-cong-chuan-ptc" class="text-green-700"></span></div>
+              <div><span class="font-medium">Công chuẩn phần Bổ sung:</span> <span id="stats-cong-chuan-bo-sung" class="text-green-700"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- c. Test bền -->
+        <div id="stats-section-c" class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3 text-lg">c. Test bền</h4>
+          <div class="bg-yellow-50 p-4 rounded-lg mb-3">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+              <div><span class="font-medium">Test bền:</span> <span id="stats-test-ben" class="text-yellow-800"></span></div>
+              <div><span class="font-medium">Dự kiến hoàn thành test bền:</span> <span id="stats-test-ben-du-kien" class="text-yellow-800"></span></div>
+            </div>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div id="stats-test-ben-1" class="bg-yellow-50 p-3 rounded-lg hidden">
               <div class="font-medium text-yellow-800 mb-1">Test bền bìa 1</div>
@@ -602,53 +558,105 @@
           </div>
         </div>
 
-        <!-- Chi tiết bài test -->
-        <div id="stats-test-details-section" class="mb-6">
-          <h4 class="font-semibold text-gray-800 mb-3">Chi tiết bài test</h4>
-          <div class="space-y-4">
+        <!-- d. Tiêu chuẩn kỹ thuật -->
+        <div id="stats-section-d" class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3 text-lg">d. Tiêu chuẩn kỹ thuật</h4>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+              <div><span class="font-medium">Hạng mục đánh giá TCKT:</span> <span id="stats-total-tckt" class="text-purple-700"></span></div>
+              <div><span class="font-medium">Hạng mục OK:</span> <span id="stats-ok" class="text-green-700"></span></div>
+              <div><span class="font-medium">Hạng mục NG:</span> <span id="stats-ng" class="text-red-600"></span></div>
+              <div><span class="font-medium">Hạng mục test bền:</span> <span id="stats-test-ben-count" class="text-blue-600"></span></div>
+              <div><span class="font-medium">Hạng mục không đánh giá:</span> <span id="stats-not-eval" class="text-gray-600"></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- e. Hạng mục thêm -->
+        <div id="stats-section-e" class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3 text-lg">e. Hạng mục thêm</h4>
+          <div class="bg-orange-50 p-4 rounded-lg">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mb-3">
+              <div><span class="font-medium">Hạng mục thêm:</span> <span id="stats-additional" class="text-orange-700"></span></div>
+              <div><span class="font-medium">Hạng mục thêm OK:</span> <span id="stats-additional-ok" class="text-green-700"></span></div>
+              <div><span class="font-medium">Hạng mục thêm NG:</span> <span id="stats-additional-ng" class="text-red-600"></span></div>
+              <div><span class="font-medium">Hạng mục thêm test bền:</span> <span id="stats-additional-test-ben" class="text-blue-600"></span></div>
+              <div><span class="font-medium">Hạng mục thêm NA:</span> <span id="stats-additional-na" class="text-gray-600"></span></div>
+            </div>
+            <div class="mt-2"><span class="font-medium">Nhận xét Hạng mục thêm:</span> <span id="stats-additional-comment" class="text-orange-800"></span></div>
+          </div>
+        </div>
+
+        <!-- f. Rủi ro và PTC -->
+        <div id="stats-section-f" class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3 text-lg">f. Rủi ro và PTC</h4>
+          <div class="bg-red-50 p-4 rounded-lg">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm mb-3">
+              <div><span class="font-medium">Rủi ro và PTC:</span> <span id="stats-risk-ptc-total" class="text-red-700"></span></div>
+              <div><span class="font-medium">PTC OK:</span> <span id="stats-ptc-ok" class="text-green-700"></span></div>
+              <div><span class="font-medium">PTC NG:</span> <span id="stats-ptc-ng" class="text-red-600"></span></div>
+              <div><span class="font-medium">PTC test bền:</span> <span id="stats-ptc-test-ben" class="text-blue-600"></span></div>
+              <div><span class="font-medium">PTC NA:</span> <span id="stats-ptc-na" class="text-gray-600"></span></div>
+            </div>
+            <div class="mt-2"><span class="font-medium">Nhận xét PTC:</span> <span id="stats-ptc-comment" class="text-red-800"></span></div>
+          </div>
+        </div>
+
+        <!-- g. AI phân tích -->
+        <div id="stats-section-g" class="mb-6">
+          <h4 class="font-semibold text-gray-800 mb-3 text-lg">g. AI phân tích</h4>
+          <div class="space-y-4 mb-4">
             <div id="stats-test-1" class="bg-gray-50 p-4 rounded-lg hidden">
+              <div class="font-semibold text-gray-800 mb-2">Bài test 1</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div><span class="font-medium">Bài test:</span> <span id="stats-test-1-name" class="text-gray-700"></span></div>
                 <div><span class="font-medium">Tiêu chuẩn:</span> <span id="stats-test-1-standard" class="text-gray-700"></span></div>
+                <div><span class="font-medium">Điều kiện:</span> <span id="stats-test-1-condition" class="text-gray-700"></span></div>
                 <div><span class="font-medium">Tiến độ:</span> <span id="stats-test-1-progress" class="text-gray-700"></span></div>
-                <div><span class="font-medium">Tình trạng:</span> <span id="stats-test-1-status" class="text-gray-700"></span></div>
+                <div class="md:col-span-2"><span class="font-medium">Tình trạng:</span> <span id="stats-test-1-status" class="text-gray-700"></span></div>
               </div>
             </div>
             <div id="stats-test-2" class="bg-gray-50 p-4 rounded-lg hidden">
+              <div class="font-semibold text-gray-800 mb-2">Bài test 2</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div><span class="font-medium">Bài test:</span> <span id="stats-test-2-name" class="text-gray-700"></span></div>
                 <div><span class="font-medium">Tiêu chuẩn:</span> <span id="stats-test-2-standard" class="text-gray-700"></span></div>
+                <div><span class="font-medium">Điều kiện:</span> <span id="stats-test-2-condition" class="text-gray-700"></span></div>
                 <div><span class="font-medium">Tiến độ:</span> <span id="stats-test-2-progress" class="text-gray-700"></span></div>
-                <div><span class="font-medium">Tình trạng:</span> <span id="stats-test-2-status" class="text-gray-700"></span></div>
+                <div class="md:col-span-2"><span class="font-medium">Tình trạng:</span> <span id="stats-test-2-status" class="text-gray-700"></span></div>
               </div>
             </div>
             <div id="stats-test-3" class="bg-gray-50 p-4 rounded-lg hidden">
+              <div class="font-semibold text-gray-800 mb-2">Bài test 3</div>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div><span class="font-medium">Bài test:</span> <span id="stats-test-3-name" class="text-gray-700"></span></div>
                 <div><span class="font-medium">Tiêu chuẩn:</span> <span id="stats-test-3-standard" class="text-gray-700"></span></div>
+                <div><span class="font-medium">Điều kiện:</span> <span id="stats-test-3-condition" class="text-gray-700"></span></div>
                 <div><span class="font-medium">Tiến độ:</span> <span id="stats-test-3-progress" class="text-gray-700"></span></div>
-                <div><span class="font-medium">Tình trạng:</span> <span id="stats-test-3-status" class="text-gray-700"></span></div>
+                <div class="md:col-span-2"><span class="font-medium">Tình trạng:</span> <span id="stats-test-3-status" class="text-gray-700"></span></div>
+              </div>
+            </div>
+            <div id="stats-test-4" class="bg-gray-50 p-4 rounded-lg hidden">
+              <div class="font-semibold text-gray-800 mb-2">Bài test 4</div>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div><span class="font-medium">Bài test:</span> <span id="stats-test-4-name" class="text-gray-700"></span></div>
+                <div><span class="font-medium">Tiêu chuẩn:</span> <span id="stats-test-4-standard" class="text-gray-700"></span></div>
+                <div><span class="font-medium">Điều kiện:</span> <span id="stats-test-4-condition" class="text-gray-700"></span></div>
+                <div><span class="font-medium">Tiến độ:</span> <span id="stats-test-4-progress" class="text-gray-700"></span></div>
+                <div class="md:col-span-2"><span class="font-medium">Tình trạng:</span> <span id="stats-test-4-status" class="text-gray-700"></span></div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Nhận xét AI và Bất thường -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <div class="bg-purple-50 p-4 rounded-lg">
+          <div class="bg-purple-50 p-4 rounded-lg mb-3">
             <h4 class="font-semibold text-purple-800 mb-2">Nhận xét AI</h4>
             <div class="text-sm text-gray-700" id="stats-ai-comment"></div>
           </div>
-          <div class="bg-orange-50 p-4 rounded-lg">
-            <h4 class="font-semibold text-orange-800 mb-2">Rủi ro và PTC</h4>
-            <div class="text-sm text-gray-700" id="stats-risk-ptc"></div>
+          <div class="bg-red-50 p-4 rounded-lg">
+            <h4 class="font-semibold text-red-800 mb-2">Bất thường AI</h4>
+            <div id="stats-abnormalities-list" class="space-y-2">
+              <div class="text-sm text-gray-500 italic">Không có bất thường nào được phát hiện</div>
+            </div>
           </div>
-        </div>
-
-        <!-- Bất thường AI -->
-        <div id="stats-abnormalities-section" class="mb-6">
-          <h4 class="font-semibold text-gray-800 mb-3">Bất thường AI</h4>
-          <div id="stats-abnormalities-list" class="space-y-2"></div>
         </div>
       </div>
       
@@ -797,6 +805,8 @@
         field_reporter: 'reporter',
         header_reporterEmail: 'Email',
         field_reporterEmail: 'reporterEmail',
+        header_picComment: 'Nhận xét PIC',
+        field_picComment: 'picComment',
         header_submitDate: 'Ngày nộp',
         field_submitDate: 'submitDate',
         header_wishDate: 'Hạn mong muốn',
@@ -923,6 +933,7 @@
         const title = getFrom(lx,'title','tiêu đề','name','reportTitle','tên');
         const reporter = getFrom(lx,'reporter','người lập','employee','author','nhân viên');
         const reporterEmail = getFrom(lx,'reporterEmail','email');
+        const picComment = getFrom(lx,'picComment','pic_comment','nhận xét pic','nhanxetpic','nhan_xet_pic');
         const submitDate = getFrom(lx,'submitDate','ngày nộp','date','ngaynop','ngaynộp','ngaynộp');
         const wishDate = getFrom(lx,'wishDate','hạn mong muốn','hanmongmuon','wish');
         const dueDate = getFrom(lx,'dueDate','deadline','hạn đánh giá');
@@ -936,6 +947,7 @@
           title: title || '',
           reporter: reporter || '',
           reporterEmail: reporterEmail || '',
+          picComment: picComment || '',
           submitDate: submitDate || '',
           wishDate: wishDate || '',
           dueDate: dueDate || '',
@@ -1007,7 +1019,7 @@
     function renderTable(){
       const body = document.getElementById('list-body'); if (!body) return;
       const total = FILTERED.length; updatePager(total);
-      if (!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>'; return; }
+      if (!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="10">Chưa có dữ liệu</td></tr>'; return; }
       const start = (CURRENT_PAGE-1)*PAGE_SIZE; const end = Math.min(total, start+PAGE_SIZE);
       const pageItems = FILTERED.slice(start,end);
       const today = new Date(); const today0 = new Date(today.getFullYear(), today.getMonth(), today.getDate());
@@ -1041,10 +1053,11 @@
             <td class="px-3 py-2"><a href="#" class="text-blue-700 hover:underline task-detail-link" data-id="${it.id}">${it.title}</a></td>
             <td class="px-3 py-2">${it.conclusion?escapeHtml(String(it.conclusion)):''}</td>
             <td class="px-3 py-2"><div>${it.reporter}</div>${it.reporterEmail?`<div class=\"text-xs text-gray-500\">${it.reporterEmail}</div>`:''}</td>
+            <td class="px-3 py-2">${it.picComment?escapeHtml(String(it.picComment)):''}</td>
+            <td class="px-3 py-2">${it.leaderComment?escapeHtml(String(it.leaderComment)):''}</td>
             <td class="px-3 py-2">${fmtDmy(it.submitDate)}</td>
             <td class="px-3 py-2">${fmtDmy(it.wishDate)}</td>
             <td class="px-3 py-2">${statusBadge}</td>
-            <td class="px-3 py-2">${it.leaderComment?escapeHtml(String(it.leaderComment)):''}</td>
           </tr>`;
       }).join('');
     }
@@ -1066,6 +1079,7 @@
         header_title: 'Tiêu đề', field_title: 'title',
         header_reporter: 'Người lập', field_reporter: 'reporter',
         header_reporterEmail: 'Email', field_reporterEmail: 'reporterEmail',
+        header_picComment: 'Nhận xét PIC', field_picComment: 'picComment',
         header_submitDate: 'Ngày nộp', field_submitDate: 'submitDate',
         header_wishDate: 'Hạn mong muốn', field_wishDate: 'wishDate',
         header_dueDate: 'Hạn đánh giá', field_dueDate: 'dueDate',
@@ -1104,7 +1118,7 @@
       }
       function lowerKeyMap(obj){ const map={}; try{ Object.keys(obj||{}).forEach(k=>{ map[String(k).toLowerCase()] = obj[k]; }); }catch(_){ } return map; }
       function getFrom(lowerObj, ...keys){ for(const k of keys){ const kk=String(k||'').toLowerCase(); if (lowerObj.hasOwnProperty(kk)) return lowerObj[kk]; } return ''; }
-      const normalizedRows = rows.map(x=>{ const lx=lowerKeyMap(x||{}); const id=getFrom(lx,'id','reportid'); const code=getFrom(lx,'code','mã báo cáo','ma'); const title=getFrom(lx,'title','tiêu đề','name'); const reporter=getFrom(lx,'reporter','người lập','employee'); const reporterEmail=getFrom(lx,'reporteremail','email'); const submitDate=getFrom(lx,'submitdate','ngày nộp','date'); const wishDate=getFrom(lx,'wishdate','hạn mong muốn'); const dueDate=getFrom(lx,'duedate','deadline','hạn đánh giá'); const statusRaw=getFrom(lx,'status','trạng thái','trangthai'); const status=normalizeNctnStatus(statusRaw); const conclusion=getFrom(lx,'conclusion','kết luận'); const leaderComment=getFrom(lx,'leadercomment','leader_comment','nhận xét leader','nhanxetleader','nhan_xet_leader','nhận xét trưởng nhóm','nhanxettruongnhom','nhan_xet_truong_nhom'); const reportUrl=getFrom(lx,'reporturl','liên kết báo cáo','url','link','href'); return { id:id||code||'', code:code||id||'', title:title||'', reporter:reporter||'', reporterEmail:reporterEmail||'', submitDate:submitDate||'', wishDate:wishDate||'', dueDate:dueDate||'', status:status, statusRaw:statusRaw, conclusion:conclusion||'', leaderComment:leaderComment||'', reportUrl:reportUrl||'' }; }).filter(item => {
+      const normalizedRows = rows.map(x=>{ const lx=lowerKeyMap(x||{}); const id=getFrom(lx,'id','reportid'); const code=getFrom(lx,'code','mã báo cáo','ma'); const title=getFrom(lx,'title','tiêu đề','name'); const reporter=getFrom(lx,'reporter','người lập','employee'); const reporterEmail=getFrom(lx,'reporteremail','email'); const picComment=getFrom(lx,'piccomment','pic_comment','nhận xét pic','nhanxetpic','nhan_xet_pic'); const submitDate=getFrom(lx,'submitdate','ngày nộp','date'); const wishDate=getFrom(lx,'wishdate','hạn mong muốn'); const dueDate=getFrom(lx,'duedate','deadline','hạn đánh giá'); const statusRaw=getFrom(lx,'status','trạng thái','trangthai'); const status=normalizeNctnStatus(statusRaw); const conclusion=getFrom(lx,'conclusion','kết luận'); const leaderComment=getFrom(lx,'leadercomment','leader_comment','nhận xét leader','nhanxetleader','nhan_xet_leader','nhận xét trưởng nhóm','nhanxettruongnhom','nhan_xet_truong_nhom'); const reportUrl=getFrom(lx,'reporturl','liên kết báo cáo','url','link','href'); return { id:id||code||'', code:code||id||'', title:title||'', reporter:reporter||'', reporterEmail:reporterEmail||'', picComment:picComment||'', submitDate:submitDate||'', wishDate:wishDate||'', dueDate:dueDate||'', status:status, statusRaw:statusRaw, conclusion:conclusion||'', leaderComment:leaderComment||'', reportUrl:reportUrl||'' }; }).filter(item => {
         // Lọc bỏ các trạng thái "Doing" - không hiển thị
         const statusRawLower = String(item.statusRaw || '').toLowerCase().trim();
         const isDoing = ['doing','dang lam','đang làm','in progress','progress'].includes(statusRawLower);
@@ -1153,7 +1167,7 @@
     function renderNctnTable(){
       const body = document.getElementById('nctn-list-body'); if(!body) return;
       const total = NCTN_FILTERED.length; updateNctnPager(total);
-      if(!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="9">Chưa có dữ liệu</td></tr>'; return; }
+      if(!total){ body.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500" colspan="10">Chưa có dữ liệu</td></tr>'; return; }
       const start=(NCTN_PAGE-1)*NCTN_PAGE_SIZE; const end=Math.min(total,start+NCTN_PAGE_SIZE); const pageItems=NCTN_FILTERED.slice(start,end);
       const today=new Date(); const today0=new Date(today.getFullYear(),today.getMonth(),today.getDate());
       body.innerHTML = pageItems.map(it=>{
@@ -1174,10 +1188,11 @@
             <td class="px-3 py-2"><a href="#" class="text-blue-700 hover:underline task-detail-link" data-id="${it.id}">${it.title}</a></td>
             <td class="px-3 py-2">${it.conclusion?escapeHtml(String(it.conclusion)):''}</td>
             <td class="px-3 py-2"><div>${it.reporter}</div>${it.reporterEmail?`<div class=\"text-xs text-gray-500\">${it.reporterEmail}</div>`:''}</td>
+            <td class="px-3 py-2">${it.picComment?escapeHtml(String(it.picComment)):''}</td>
+            <td class="px-3 py-2">${it.leaderComment?escapeHtml(String(it.leaderComment)):''}</td>
             <td class="px-3 py-2">${fmtDmy(it.submitDate)}</td>
             <td class="px-3 py-2">${fmtDmy(it.wishDate)}</td>
             <td class="px-3 py-2">${statusBadge}</td>
-            <td class="px-3 py-2">${it.leaderComment?escapeHtml(String(it.leaderComment)):''}</td>
           </tr>`;
       }).join('');
     }
@@ -1275,40 +1290,80 @@
       if (loadingEl) loadingEl.style.display = 'block';
       if (contentEl) contentEl.classList.add('hidden');
       
+      // Reset tất cả các section về hiển thị (sẽ ẩn sau nếu không có dữ liệu)
+      const sections = ['stats-section-c', 'stats-section-d', 'stats-section-e', 'stats-section-f', 'stats-section-g'];
+      sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) section.style.display = 'block';
+      });
+      
       const it = findItem(id);
       if (titleEl) titleEl.textContent = it ? `Thống kê chi tiết - ${it.code}` : 'Thống kê chi tiết';
       
       try {
-        // Fetch stats data
+        // Fetch stats data - Header map đầy đủ
         const headerMapStats = {
-          header_task_code: 'Mã tác vụ', field_task_code: 'task_code',
+          // a. Thông tin cơ bản
+          header_ma: 'Mã', field_ma: 'ma',
+          header_task_name: 'Task Name', field_task_name: 'task_name',
           header_conclusion: 'Kết luận (trang bìa)', field_conclusion: 'conclusion',
+          // b. Công chuẩn
+          header_cong_uoc_luong: 'Công ước lượng', field_cong_uoc_luong: 'cong_uoc_luong',
+          header_cong_chuan_day_du: 'Công chuẩn đầy đủ', field_cong_chuan_day_du: 'cong_chuan_day_du',
+          header_cong_chuan_thuc_te: 'Công chuẩn thực tế', field_cong_chuan_thuc_te: 'cong_chuan_thuc_te',
+          header_cong_chuan_ptc: 'Công chuẩn phần PTC', field_cong_chuan_ptc: 'cong_chuan_ptc',
+          header_cong_chuan_bo_sung: 'Công chuẩn phần Bổ sung', field_cong_chuan_bo_sung: 'cong_chuan_bo_sung',
+          // c. Test bền
+          header_test_ben: 'Test bền', field_test_ben: 'test_ben',
+          header_test_ben_du_kien: 'Dự kiến hoàn thành test bền', field_test_ben_du_kien: 'test_ben_du_kien',
           header_test_ben_1: 'Test bền bìa 1', field_test_ben_1: 'test_ben_1',
           header_test_ben_2: 'Test bền bìa 2', field_test_ben_2: 'test_ben_2',
           header_test_ben_3: 'Test bền bìa 3', field_test_ben_3: 'test_ben_3',
           header_test_ben_4: 'Test bền bìa 4', field_test_ben_4: 'test_ben_4',
           header_test_ben_5: 'Test bền bìa 5', field_test_ben_5: 'test_ben_5',
+          // d. Tiêu chuẩn kỹ thuật
           header_total_tckt: 'Hạng mục đánh giá TCKT', field_total_tckt: 'total_tckt',
           header_ok: 'Hạng mục OK', field_ok: 'ok',
           header_ng: 'Hạng mục NG', field_ng: 'ng',
           header_test_ben_count: 'Hạng mục test bền', field_test_ben_count: 'test_ben_count',
           header_not_eval: 'Hạng mục không đánh giá', field_not_eval: 'not_eval',
-          header_ai_comment: 'Nhận xét AI', field_ai_comment: 'ai_comment',
-          header_additional: 'Hạng mục thêm', field_additional: 'additional',
-          header_risk_ptc: 'Rủi ro và PTC', field_risk_ptc: 'risk_ptc',
-          header_abnormalities: 'Bất thường AI', field_abnormalities: 'abnormalities',
+          // e. Hạng mục thêm
+          header_additional: 'Hạng mục thêm ', field_additional: 'additional',
+          header_additional_ok: 'Hạng mục thêm OK', field_additional_ok: 'additional_ok',
+          header_additional_ng: 'Hạng mục thêm NG', field_additional_ng: 'additional_ng',
+          header_additional_test_ben: 'Hạng mục thêm test bền', field_additional_test_ben: 'additional_test_ben',
+          header_additional_na: 'Hạng mục thêm NA', field_additional_na: 'additional_na',
+          header_additional_comment: 'Nhận xét Hạng mục thêm', field_additional_comment: 'additional_comment',
+          // f. Rủi ro và PTC
+          header_risk_ptc_total: 'Rủi ro và PTC', field_risk_ptc_total: 'risk_ptc_total',
+          header_ptc_ok: 'PTC OK', field_ptc_ok: 'ptc_ok',
+          header_ptc_ng: 'PTC NG', field_ptc_ng: 'ptc_ng',
+          header_ptc_test_ben: 'PTC test bền', field_ptc_test_ben: 'ptc_test_ben',
+          header_ptc_na: 'PTC NA', field_ptc_na: 'ptc_na',
+          header_ptc_comment: 'Nhận xét PTC', field_ptc_comment: 'ptc_comment',
+          // g. AI phân tích
           header_test_1_name: 'Bài test 1', field_test_1_name: 'test_1_name',
           header_test_1_standard: 'Tiêu chuẩn 1', field_test_1_standard: 'test_1_standard',
+          header_test_1_condition: 'Điều kiện 1', field_test_1_condition: 'test_1_condition',
           header_test_1_progress: 'Tiến độ 1', field_test_1_progress: 'test_1_progress',
           header_test_1_status: 'Tình trạng 1', field_test_1_status: 'test_1_status',
           header_test_2_name: 'Bài test 2', field_test_2_name: 'test_2_name',
           header_test_2_standard: 'Tiêu chuẩn 2', field_test_2_standard: 'test_2_standard',
+          header_test_2_condition: 'Điều kiện 2', field_test_2_condition: 'test_2_condition',
           header_test_2_progress: 'Tiến độ 2', field_test_2_progress: 'test_2_progress',
           header_test_2_status: 'Trình trạng 2', field_test_2_status: 'test_2_status',
           header_test_3_name: 'Bài test 3', field_test_3_name: 'test_3_name',
           header_test_3_standard: 'Tiêu chuẩn 3', field_test_3_standard: 'test_3_standard',
+          header_test_3_condition: 'Điều kiện 3', field_test_3_condition: 'test_3_condition',
           header_test_3_progress: 'Tiến độ 3', field_test_3_progress: 'test_3_progress',
-          header_test_3_status: 'Tình trạng 3', field_test_3_status: 'test_3_status'
+          header_test_3_status: 'Tình trạng 3', field_test_3_status: 'test_3_status',
+          header_test_4_name: 'Bài test 4', field_test_4_name: 'test_4_name',
+          header_test_4_standard: 'Tiêu chuẩn 4', field_test_4_standard: 'test_4_standard',
+          header_test_4_condition: 'Điều kiện 4', field_test_4_condition: 'test_4_condition',
+          header_test_4_progress: 'Tiến độ 4', field_test_4_progress: 'test_4_progress',
+          header_test_4_status: 'Trình trạng 4', field_test_4_status: 'test_4_status',
+          header_ai_comment: 'Nhận xét AI', field_ai_comment: 'ai_comment',
+          header_abnormalities: 'Bất thường AI', field_abnormalities: 'abnormalities'
         };
         
         const qs = new URLSearchParams({ 
@@ -1344,61 +1399,156 @@
         
         const stats = data[0]; // Get first item
         
-        // Populate basic info
-        document.getElementById('stats-task-code').textContent = stats['Mã tác vụ'] || '';
-        document.getElementById('stats-conclusion').textContent = stats['Kết luận (trang bìa)'] || '';
+        // a. Populate Thông tin cơ bản
+        const maEl = document.getElementById('stats-ma');
+        const taskNameEl = document.getElementById('stats-task-name');
+        const conclusionEl = document.getElementById('stats-conclusion');
+        if (maEl) maEl.textContent = stats['Mã'] || '';
+        if (taskNameEl) taskNameEl.textContent = stats['Task Name'] || '';
+        if (conclusionEl) conclusionEl.textContent = stats['Kết luận (trang bìa)'] || '';
         
-        // Populate statistics
-        document.getElementById('stats-total-tckt').textContent = stats['Hạng mục đánh giá TCKT'] || '0';
-        document.getElementById('stats-ok').textContent = stats['Hạng mục OK'] || '0';
-        document.getElementById('stats-ng').textContent = stats['Hạng mục NG'] || '0';
-        document.getElementById('stats-test-ben').textContent = stats['Hạng mục test bền'] || '0';
-        document.getElementById('stats-not-eval').textContent = stats['Hạng mục không đánh giá'] || '0';
-        document.getElementById('stats-additional').textContent = stats['Hạng mục thêm '] || '0';
+        // b. Populate Công chuẩn
+        const congUocLuongEl = document.getElementById('stats-cong-uoc-luong');
+        const congChuanDayDuEl = document.getElementById('stats-cong-chuan-day-du');
+        const congChuanThucTeEl = document.getElementById('stats-cong-chuan-thuc-te');
+        const congChuanPtcEl = document.getElementById('stats-cong-chuan-ptc');
+        const congChuanBoSungEl = document.getElementById('stats-cong-chuan-bo-sung');
+        if (congUocLuongEl) congUocLuongEl.textContent = stats['Công ước lượng'] || '0';
+        if (congChuanDayDuEl) congChuanDayDuEl.textContent = stats['Công chuẩn đầy đủ'] || '0';
+        if (congChuanThucTeEl) congChuanThucTeEl.textContent = stats['Công chuẩn thực tế'] || '0';
+        if (congChuanPtcEl) congChuanPtcEl.textContent = stats['Công chuẩn phần PTC'] || '0';
+        if (congChuanBoSungEl) congChuanBoSungEl.textContent = stats['Công chuẩn phần Bổ sung'] || '0';
         
-        // Populate test ben sections
+        // c. Populate Test bền
+        const testBenEl = document.getElementById('stats-test-ben');
+        const testBenDuKienEl = document.getElementById('stats-test-ben-du-kien');
+        if (testBenEl) testBenEl.textContent = stats['Test bền'] || '';
+        if (testBenDuKienEl) testBenDuKienEl.textContent = stats['Dự kiến hoàn thành test bền'] || '';
+        
+        // Populate test ben sections (5 bìa)
+        let hasTestBenData = false;
+        const testBenValue = String(stats['Test bền'] || '').trim();
+        const testBenDuKien = String(stats['Dự kiến hoàn thành test bền'] || '').trim();
+        if (testBenValue || testBenDuKien) {
+          hasTestBenData = true;
+        }
+        
         for (let i = 1; i <= 5; i++) {
           const testBenKey = `Test bền bìa ${i}`;
           const testBenContent = stats[testBenKey];
-          const testBenEl = document.getElementById(`stats-test-ben-${i}`);
+          const testBenItemEl = document.getElementById(`stats-test-ben-${i}`);
           const testBenContentEl = document.getElementById(`stats-test-ben-${i}-content`);
           
-          if (testBenContent && testBenContent.trim()) {
-            if (testBenEl) testBenEl.classList.remove('hidden');
+          if (testBenContent && String(testBenContent).trim()) {
+            hasTestBenData = true;
+            if (testBenItemEl) testBenItemEl.classList.remove('hidden');
             if (testBenContentEl) testBenContentEl.textContent = testBenContent;
           } else {
-            if (testBenEl) testBenEl.classList.add('hidden');
+            if (testBenItemEl) testBenItemEl.classList.add('hidden');
           }
         }
         
-        // Populate test details
-        for (let i = 1; i <= 3; i++) {
+        // Ẩn section c nếu không có dữ liệu
+        const sectionC = document.getElementById('stats-section-c');
+        if (sectionC) {
+          sectionC.style.display = hasTestBenData ? 'block' : 'none';
+        }
+        
+        // d. Populate Tiêu chuẩn kỹ thuật
+        const totalTckt = parseInt(stats['Hạng mục đánh giá TCKT'] || '0');
+        const ok = parseInt(stats['Hạng mục OK'] || '0');
+        const ng = parseInt(stats['Hạng mục NG'] || '0');
+        const testBenCount = parseInt(stats['Hạng mục test bền'] || '0');
+        const notEval = parseInt(stats['Hạng mục không đánh giá'] || '0');
+        
+        document.getElementById('stats-total-tckt').textContent = totalTckt || '0';
+        document.getElementById('stats-ok').textContent = ok || '0';
+        document.getElementById('stats-ng').textContent = ng || '0';
+        document.getElementById('stats-test-ben-count').textContent = testBenCount || '0';
+        document.getElementById('stats-not-eval').textContent = notEval || '0';
+        
+        // Ẩn section d nếu tất cả đều 0 hoặc rỗng
+        const sectionD = document.getElementById('stats-section-d');
+        const hasDataD = totalTckt > 0 || ok > 0 || ng > 0 || testBenCount > 0 || notEval > 0;
+        if (sectionD) {
+          sectionD.style.display = hasDataD ? 'block' : 'none';
+        }
+        
+        // e. Populate Hạng mục thêm
+        const additional = parseInt(stats['Hạng mục thêm '] || '0');
+        const additionalOk = parseInt(stats['Hạng mục thêm OK'] || '0');
+        const additionalNg = parseInt(stats['Hạng mục thêm NG'] || '0');
+        const additionalTestBen = parseInt(stats['Hạng mục thêm test bền'] || '0');
+        const additionalNa = parseInt(stats['Hạng mục thêm NA'] || '0');
+        const additionalComment = stats['Nhận xét Hạng mục thêm'] || '';
+        
+        document.getElementById('stats-additional').textContent = additional || '0';
+        document.getElementById('stats-additional-ok').textContent = additionalOk || '0';
+        document.getElementById('stats-additional-ng').textContent = additionalNg || '0';
+        document.getElementById('stats-additional-test-ben').textContent = additionalTestBen || '0';
+        document.getElementById('stats-additional-na').textContent = additionalNa || '0';
+        document.getElementById('stats-additional-comment').textContent = additionalComment;
+        
+        // Ẩn section e nếu không có dữ liệu
+        const sectionE = document.getElementById('stats-section-e');
+        const hasDataE = additional > 0 || additionalOk > 0 || additionalNg > 0 || additionalTestBen > 0 || additionalNa > 0 || additionalComment.trim();
+        if (sectionE) {
+          sectionE.style.display = hasDataE ? 'block' : 'none';
+        }
+        
+        // f. Populate Rủi ro và PTC
+        const riskPtcTotal = parseInt(stats['Rủi ro và PTC'] || '0');
+        const ptcOk = parseInt(stats['PTC OK'] || '0');
+        const ptcNg = parseInt(stats['PTC NG'] || '0');
+        const ptcTestBen = parseInt(stats['PTC test bền'] || '0');
+        const ptcNa = parseInt(stats['PTC NA'] || '0');
+        const ptcComment = stats['Nhận xét PTC'] || '';
+        
+        document.getElementById('stats-risk-ptc-total').textContent = riskPtcTotal || '0';
+        document.getElementById('stats-ptc-ok').textContent = ptcOk || '0';
+        document.getElementById('stats-ptc-ng').textContent = ptcNg || '0';
+        document.getElementById('stats-ptc-test-ben').textContent = ptcTestBen || '0';
+        document.getElementById('stats-ptc-na').textContent = ptcNa || '0';
+        document.getElementById('stats-ptc-comment').textContent = ptcComment;
+        
+        // Ẩn section f nếu không có dữ liệu
+        const sectionF = document.getElementById('stats-section-f');
+        const hasDataF = riskPtcTotal > 0 || ptcOk > 0 || ptcNg > 0 || ptcTestBen > 0 || ptcNa > 0 || ptcComment.trim();
+        if (sectionF) {
+          sectionF.style.display = hasDataF ? 'block' : 'none';
+        }
+        
+        // g. Populate AI phân tích - Bài test 1-4
+        let hasTestData = false;
+        for (let i = 1; i <= 4; i++) {
           const testName = stats[`Bài test ${i}`];
           const testEl = document.getElementById(`stats-test-${i}`);
           
           if (testName && testName.trim()) {
+            hasTestData = true;
             if (testEl) testEl.classList.remove('hidden');
             document.getElementById(`stats-test-${i}-name`).textContent = testName;
             document.getElementById(`stats-test-${i}-standard`).textContent = stats[`Tiêu chuẩn ${i}`] || '';
+            document.getElementById(`stats-test-${i}-condition`).textContent = stats[`Điều kiện ${i}`] || '';
             document.getElementById(`stats-test-${i}-progress`).textContent = stats[`Tiến độ ${i}`] || '';
-            document.getElementById(`stats-test-${i}-status`).textContent = stats[`Tình trạng ${i}`] || stats[`Trình trạng ${i}`] || '';
+            // Xử lý cả "Tình trạng" và "Trình trạng" (có thể có typo)
+            const statusKey = `Tình trạng ${i}`;
+            const statusKeyAlt = `Trình trạng ${i}`;
+            document.getElementById(`stats-test-${i}-status`).textContent = stats[statusKey] || stats[statusKeyAlt] || '';
           } else {
             if (testEl) testEl.classList.add('hidden');
           }
         }
         
-        // Populate AI comment and risk
-        document.getElementById('stats-ai-comment').textContent = stats['Nhận xét AI'] || '';
-        document.getElementById('stats-risk-ptc').textContent = stats['Rủi ro và PTC'] || '';
+        // Populate Nhận xét AI
+        const aiComment = stats['Nhận xét AI'] || '';
+        document.getElementById('stats-ai-comment').textContent = aiComment;
         
-        // Populate abnormalities
+        // Populate Bất thường AI
         const abnormalitiesList = document.getElementById('stats-abnormalities-list');
         const abnormalities = stats['Bất thường AI'];
         
-        // Debug: Log the abnormalities data
-        console.log('Abnormalities data:', abnormalities);
-        console.log('Abnormalities type:', typeof abnormalities);
-        
+        let hasAbnormalities = false;
         if (abnormalitiesList) {
           abnormalitiesList.innerHTML = '';
           
@@ -1416,6 +1566,7 @@
           }
           
           if (abnormalityItems.length > 0) {
+            hasAbnormalities = true;
             abnormalityItems.forEach((abnormality, index) => {
               if (abnormality && abnormality.trim()) {
                 const div = document.createElement('div');
@@ -1427,6 +1578,13 @@
           } else {
             abnormalitiesList.innerHTML = '<div class="text-sm text-gray-500 italic">Không có bất thường nào được phát hiện</div>';
           }
+        }
+        
+        // Ẩn section g nếu không có dữ liệu (không có bài test nào, không có nhận xét AI, không có bất thường)
+        const sectionG = document.getElementById('stats-section-g');
+        const hasDataG = hasTestData || aiComment.trim() || hasAbnormalities;
+        if (sectionG) {
+          sectionG.style.display = hasDataG ? 'block' : 'none';
         }
         
         // Show content and hide loading
@@ -1457,9 +1615,31 @@
           if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryPost(ACTION_URL.replace('/webhook-test/','/webhook/'));
           if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(ACTION_URL.replace('/webhook-test/','/webhook/'));
           if (!r.ok) throw new Error(r.raw||'Gửi thất bại');
-        closeModal('modal-approve'); showToast(`Đã duyệt báo cáo. Mã: ${qaCode}`,'success');
-        if (CURRENT_CONTEXT==='NCTN'){ NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS); renderNctnTable(); }
-        else { FILTERED = applyFilters(ALL_ITEMS); renderTable(); }
+        // Đóng modal và hiển thị thông báo thành công
+        closeModal('modal-approve'); 
+        showToast(`Đã duyệt báo cáo. Mã: ${qaCode}`,'success');
+        // Tự động tải lại bảng ngay lập tức sau khi có thông báo thành công
+        (async () => {
+          try {
+            console.log('Bắt đầu reload bảng sau khi phê duyệt...');
+            if (CURRENT_CONTEXT==='NCTN'){ 
+              await reloadNctnDataSilent(); 
+            } else { 
+              await reloadDataSilent(); 
+            }
+            console.log('Đã reload bảng thành công');
+          } catch(reloadErr) {
+            console.error('Lỗi khi tải lại bảng:', reloadErr);
+            // Nếu reload thất bại, vẫn cố gắng render lại với dữ liệu hiện tại
+            if (CURRENT_CONTEXT==='NCTN'){ 
+              NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS); 
+              renderNctnTable(); 
+            } else { 
+              FILTERED = applyFilters(ALL_ITEMS); 
+              renderTable(); 
+            }
+          }
+        })();
       }catch(err){ showToast('Lỗi duyệt báo cáo.','error'); }
       finally{ btn.disabled=false; btn.textContent = prev||'Xác nhận duyệt'; }
     }
@@ -1651,12 +1831,6 @@
       });
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal.open').forEach(m=> closeModal(m.id)); } });
 
-      // Toggle debug panel
-      document.getElementById('btn-debug')?.addEventListener('click', (e)=>{
-        e.preventDefault();
-        const panel=document.getElementById('debug-panel'); if(!panel) return; panel.style.display = panel.style.display==='none' ? 'block' : 'none';
-      });
-
       const body = document.getElementById('list-body');
       body.addEventListener('click', (e)=>{
         const link = e.target.closest('.report-link');
@@ -1704,10 +1878,7 @@
       document.getElementById('req-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doRequest(); });
 
       // NCTN events
-      document.getElementById('nctn-btn-debug')?.addEventListener('click', (e)=>{ e.preventDefault(); const p=document.getElementById('nctn-debug-panel'); if(!p) return; p.style.display = p.style.display==='none'?'block':'none'; });
       document.getElementById('nctn-btn-search')?.addEventListener('click', async (e)=>{ e.preventDefault(); await reloadNctn(); });
-      document.getElementById('nctn-btn-reset')?.addEventListener('click', async (e)=>{ e.preventDefault(); ['nctn-flt-q','nctn-flt-status','nctn-flt-from','nctn-flt-to'].forEach(id=>{ const el=document.getElementById(id); if(!el) return; if (el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; }); await reloadNctn(); });
-      document.getElementById('nctn-flt-mode')?.addEventListener('change', (e)=>{ applyQuickRangeLocalNctn(e.target.value||'All'); });
       document.getElementById('nctn-flt-from')?.addEventListener('change', ()=>{ filterTimeInPlaceNctn(); });
       document.getElementById('nctn-flt-to')?.addEventListener('change', ()=>{ filterTimeInPlaceNctn(); });
       document.getElementById('nctn-page-size')?.addEventListener('change', (e)=>{ NCTN_PAGE_SIZE = Number(e.target.value||20)||20; NCTN_PAGE=1; renderNctnTable(); });
@@ -1715,10 +1886,6 @@
       document.getElementById('nctn-next')?.addEventListener('click', ()=>{ const pages=Math.max(1,Math.ceil(NCTN_FILTERED.length/NCTN_PAGE_SIZE)); if (NCTN_PAGE<pages){ NCTN_PAGE++; renderNctnTable(); } });
 
       document.getElementById('btn-search')?.addEventListener('click', async (e)=>{ e.preventDefault(); await reload(); });
-      document.getElementById('btn-reset')?.addEventListener('click', async (e)=>{
-        e.preventDefault(); ['flt-q','flt-status','flt-from','flt-to'].forEach(id=>{ const el=document.getElementById(id); if(!el) return; if (el.tagName==='SELECT') el.selectedIndex=0; else el.value=''; }); await reload();
-      });
-      document.getElementById('flt-mode')?.addEventListener('change', (e)=>{ applyQuickRangeLocal(e.target.value||'All'); });
       // Lọc thời gian tại chỗ khi thay đổi ngày From/To
       document.getElementById('flt-from')?.addEventListener('change', ()=>{ filterTimeInPlace(); });
       document.getElementById('flt-to')?.addEventListener('change', ()=>{ filterTimeInPlace(); });
@@ -1814,6 +1981,30 @@
       }finally{ if(btn){ btn.disabled=false; btn.textContent = prev||'Tra cứu'; } }
     }
 
+    // Hàm reload nhẹ không disable button - dùng sau khi phê duyệt/từ chối
+    async function reloadDataSilent(){
+      try{
+        console.log('Reloading DQA data...');
+        const params = {
+          q: document.getElementById('flt-q')?.value||'',
+          status: document.getElementById('flt-status')?.value||'',
+          from: document.getElementById('flt-from')?.value||'',
+          to: document.getElementById('flt-to')?.value||'',
+          mode: document.getElementById('flt-mode')?.value||'All',
+          page: CURRENT_PAGE,
+          pageSize: PAGE_SIZE
+        };
+        const items = await fetchReports(params);
+        ALL_ITEMS = Array.isArray(items) ? items : [];
+        FILTERED = applyFilters(ALL_ITEMS);
+        CURRENT_PAGE = 1;
+        renderTable();
+        console.log('DQA data reloaded successfully');
+      }catch(err){
+        console.error('Lỗi khi tải lại dữ liệu:', err);
+      }
+    }
+
     async function reloadNctn(){
       const btn = document.getElementById('nctn-btn-search'); const prev = btn?btn.textContent:''; if(btn){ btn.disabled=true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang tải..."; }
       try{
@@ -1833,6 +2024,30 @@
         renderNctnTable();
       }catch(err){ showToast('Lỗi tải dữ liệu.','error'); }
       finally{ if(btn){ btn.disabled=false; btn.textContent = prev||'Tra cứu'; } }
+    }
+
+    // Hàm reload NCTN nhẹ không disable button - dùng sau khi phê duyệt/từ chối
+    async function reloadNctnDataSilent(){
+      try{
+        console.log('Reloading NCTN data...');
+        const params = {
+          q: document.getElementById('nctn-flt-q')?.value||'',
+          status: document.getElementById('nctn-flt-status')?.value||'',
+          from: document.getElementById('nctn-flt-from')?.value||'',
+          to: document.getElementById('nctn-flt-to')?.value||'',
+          mode: document.getElementById('nctn-flt-mode')?.value||'All',
+          page: NCTN_PAGE,
+          pageSize: NCTN_PAGE_SIZE
+        };
+        const items = await fetchNctnReports(params);
+        NCTN_ITEMS = Array.isArray(items) ? items : [];
+        NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS);
+        NCTN_PAGE = 1;
+        renderNctnTable();
+        console.log('NCTN data reloaded successfully');
+      }catch(err){
+        console.error('Lỗi khi tải lại dữ liệu NCTN:', err);
+      }
     }
 
     function applyQuickRange(mode){
