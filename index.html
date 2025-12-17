@@ -1034,7 +1034,20 @@
         const id = getFrom(lx,'id','ID','Id','reportId','report_id');
         const code = getFrom(lx,'code','mã báo cáo','ma','taskcode','reportCode','mã tác vụ','Mã tác vụ');
         const title = getFrom(lx,'title','tiêu đề','name','reportTitle','tên','task name','Task Name');
-        const reporter = getFrom(lx,'reporter','người lập','employee','author','nhân viên','assignee','Assignee');
+        // Lấy giá trị Người lập: ưu tiên PICSPM (nếu có và có ký tự chữ), sau đó assignee/Assignee, cuối cùng là các trường khác
+        let reporter = '';
+        const picSpm = getFrom(lx,'picspm','PICSPM');
+        // Kiểm tra PICSPM có giá trị và có ít nhất 1 ký tự chữ
+        if (picSpm && String(picSpm).trim() && /[a-zA-ZÀ-ỹ]/.test(String(picSpm))) {
+          reporter = picSpm;
+        } else {
+          // Thử assignee/Assignee
+          reporter = getFrom(lx,'assignee','Assignee');
+          // Nếu vẫn rỗng, thử các trường khác
+          if (!reporter || !String(reporter).trim()) {
+            reporter = getFrom(lx,'reporter','reporterName','người lập','nguoilap','Người lập','người thực hiện','nguoithuchien','employee','author','nhân viên');
+          }
+        }
         const reporterEmail = getFrom(lx,'reporterEmail','email');
         const picComment = getFrom(lx,'picComment','pic_comment','nhận xét pic','nhanxetpic','nhan_xet_pic');
         const submitDate = getFrom(lx,'submitDate','ngày nộp','date','ngaynop','ngaynộp','ngày cập nhật gần nhất','Ngày cập nhật gần nhất');
@@ -1232,7 +1245,20 @@
         const id=getFrom(lx,'id','ID','Id','reportid'); 
         const code=getFrom(lx,'code','mã báo cáo','ma','mã tác vụ','Mã tác vụ'); 
         const title=getFrom(lx,'title','tiêu đề','name','Task Name','task name'); 
-        const reporter=getFrom(lx,'reporter','người lập','employee','Assignee','assignee'); 
+        // Lấy giá trị Người lập: ưu tiên PICSPM (nếu có và có ký tự chữ), sau đó assignee/Assignee, cuối cùng là các trường khác
+        let reporter = '';
+        const picSpm = getFrom(lx,'picspm','PICSPM');
+        // Kiểm tra PICSPM có giá trị và có ít nhất 1 ký tự chữ
+        if (picSpm && String(picSpm).trim() && /[a-zA-ZÀ-ỹ]/.test(String(picSpm))) {
+          reporter = picSpm;
+        } else {
+          // Thử assignee/Assignee
+          reporter = getFrom(lx,'assignee','Assignee');
+          // Nếu vẫn rỗng, thử các trường khác
+          if (!reporter || !String(reporter).trim()) {
+            reporter = getFrom(lx,'reporter','reporterName','người lập','nguoilap','Người lập','người thực hiện','nguoithuchien','employee');
+          }
+        } 
         const reporterEmail=getFrom(lx,'reporteremail','email'); 
         const picComment=getFrom(lx,'piccomment','pic_comment','nhận xét pic','nhanxetpic','nhan_xet_pic'); 
         const submitDate=getFrom(lx,'submitdate','ngày nộp','date','ngày cập nhật gần nhất','Ngày cập nhật gần nhất'); 
