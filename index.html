@@ -245,6 +245,9 @@
           <button id="nctn-next" class="px-3 py-1 rounded-lg text-white font-semibold bg-primary-blue hover:brightness-105">Sau</button>
         </div>
       </div>
+      <div class="mt-4 flex justify-end">
+        <button id="nctn-history-btn" class="px-4 py-2 rounded-lg border border-rose-200 bg-rose-50/30 text-rose-600 hover:bg-rose-50">Lịch sử phê duyệt</button>
+      </div>
     </section>
 
     <!-- Form 3 · Giao việc (Hidden by request) -->
@@ -749,6 +752,70 @@
     </div>
   </div>
 
+  <!-- Modal NCTN History -->
+  <div id="modal-nctn-history" class="modal" aria-hidden="true">
+    <div class="w-full max-w-[95vw] bg-white rounded-xl shadow-lg p-6 flex flex-col max-h-[95vh]">
+      <div class="flex items-center justify-between mb-4 flex-shrink-0">
+        <h3 class="text-xl font-semibold text-rose-800">Lịch sử phê duyệt NCTN</h3>
+        <button data-close="modal-nctn-history" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+      </div>
+      
+      <!-- Search and Filter Section -->
+      <div id="nctn-history-filters" class="mb-4 flex-shrink-0 hidden">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 w-full">
+          <div class="md:col-span-4">
+            <label class="block text-sm text-gray-700 mb-1">Từ khóa</label>
+            <input id="nctn-history-flt-q" type="text" placeholder="Mã phê duyệt/Tác vụ/Mã tác vụ/Mã báo cáo" class="w-full border border-rose-300 rounded-lg bg-rose-50 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block text-sm text-gray-700 mb-1">Từ ngày</label>
+            <input id="nctn-history-flt-from" type="date" class="w-full border border-rose-300 rounded-lg bg-rose-50 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white" />
+          </div>
+          <div class="md:col-span-3">
+            <label class="block text-sm text-gray-700 mb-1">Đến ngày</label>
+            <input id="nctn-history-flt-to" type="date" class="w-full border border-rose-300 rounded-lg bg-rose-50 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white" />
+          </div>
+          <div class="md:col-span-2 flex items-end">
+            <button id="nctn-history-btn-filter" class="w-full submit-btn px-4 py-2 text-white font-semibold text-sm">Tra cứu</button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="nctn-history-loading" class="text-center py-8 flex-shrink-0">
+        <div class="spinner mx-auto mb-2"></div>
+        <p class="text-gray-600 text-sm">Đang tải dữ liệu...</p>
+      </div>
+      
+      <div id="nctn-history-content" class="hidden overflow-y-auto flex-1 min-h-0">
+        <div class="overflow-x-auto border border-rose-100 rounded-lg bg-rose-50/30">
+          <table class="min-w-full w-full text-sm table-zebra table-vdiv">
+            <thead class="bg-gradient-to-r from-rose-100 to-rose-50 sticky top-0 z-10">
+              <tr class="text-left text-gray-700">
+                <th class="px-3 py-2 min-w-[60px] font-semibold text-xs">STT</th>
+                <th class="px-3 py-2 min-w-[160px] font-semibold text-xs">Mã phê duyệt</th>
+                <th class="px-3 py-2 min-w-[200px] font-semibold text-xs">Tác vụ</th>
+                <th class="px-3 py-2 min-w-[140px] font-semibold text-xs">Mã tác vụ</th>
+                <th class="px-3 py-2 min-w-[160px] font-semibold text-xs">Mã báo cáo</th>
+                <th class="px-3 py-2 min-w-[120px] font-semibold text-xs">Ngày duyệt</th>
+                <th class="px-3 py-2 min-w-[100px] font-semibold text-xs">Số giờ phê duyệt</th>
+                <th class="px-3 py-2 min-w-[100px] font-semibold text-xs">Lựa chọn</th>
+                <th class="px-3 py-2 min-w-[180px] font-semibold text-xs">Ghi chú</th>
+              </tr>
+            </thead>
+            <tbody id="nctn-history-body" class="divide-y divide-gray-100">
+              <tr><td class="px-3 py-3 text-center text-gray-500 text-sm" colspan="9">Chưa có dữ liệu</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="mt-4 flex items-center justify-between flex-shrink-0">
+        <div id="nctn-history-count" class="text-sm text-gray-600"></div>
+        <button data-close="modal-nctn-history" class="px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 text-sm">Đóng</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -767,6 +834,7 @@
     // ===== NCTN Endpoints
     const NCTN_REPORTS_QUERY_URL = 'https://xcqiyibqs.tino.page/webhook/LaydulieuPheduyetNCTN2';
     const NCTN_FORM_ACTION_URL = 'https://xcqiyibqs.tino.page/webhook/TPpheduyetBCNCTN2';
+    const NCTN_HISTORY_URL = 'https://xcqiyibqs.tino.page/webhook/tracuulichsupheduyet';
 
     // ===== Phê duyệt Form Endpoints
     const PDFORM_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/PheduyenformTP'; // GET: lấy danh sách form chờ phê duyệt
@@ -786,6 +854,10 @@
     let NCTN_FILTERED = [];
     let NCTN_PAGE = 1;
     let NCTN_PAGE_SIZE = 20;
+    
+    // NCTN History state
+    let NCTN_HISTORY_ALL = [];
+    let NCTN_HISTORY_FILTERED = [];
     let F5A_CHART = null; let F5A_MODE = 'vertical'; let F5A_LAST_ROWS = [];
 
     // Phê duyệt Form state
@@ -2064,6 +2136,11 @@
       document.getElementById('nctn-page-size')?.addEventListener('change', (e)=>{ NCTN_PAGE_SIZE = Number(e.target.value||20)||20; NCTN_PAGE=1; renderNctnTable(); });
       document.getElementById('nctn-prev')?.addEventListener('click', ()=>{ if (NCTN_PAGE>1){ NCTN_PAGE--; renderNctnTable(); } });
       document.getElementById('nctn-next')?.addEventListener('click', ()=>{ const pages=Math.max(1,Math.ceil(NCTN_FILTERED.length/NCTN_PAGE_SIZE)); if (NCTN_PAGE<pages){ NCTN_PAGE++; renderNctnTable(); } });
+      document.getElementById('nctn-history-btn')?.addEventListener('click', async (e)=>{ e.preventDefault(); await openNctnHistory(); });
+      document.getElementById('nctn-history-btn-filter')?.addEventListener('click', (e)=>{ e.preventDefault(); filterNctnHistory(); });
+      document.getElementById('nctn-history-flt-q')?.addEventListener('keypress', (e)=>{ if(e.key==='Enter') filterNctnHistory(); });
+      document.getElementById('nctn-history-flt-from')?.addEventListener('change', ()=>{ filterNctnHistory(); });
+      document.getElementById('nctn-history-flt-to')?.addEventListener('change', ()=>{ filterNctnHistory(); });
 
       document.getElementById('btn-search')?.addEventListener('click', async (e)=>{ e.preventDefault(); await reload(); });
       // Lọc thời gian tại chỗ khi thay đổi ngày From/To
@@ -2266,6 +2343,190 @@
         console.log('NCTN data reloaded successfully');
       }catch(err){
         console.error('Lỗi khi tải lại dữ liệu NCTN:', err);
+      }
+    }
+
+    // ===== NCTN History
+    function filterNctnHistory(){
+      const q = (document.getElementById('nctn-history-flt-q')?.value || '').trim().toLowerCase();
+      const from = parseDateFlexible(document.getElementById('nctn-history-flt-from')?.value || '');
+      const to = parseDateFlexible(document.getElementById('nctn-history-flt-to')?.value || '');
+      
+      NCTN_HISTORY_FILTERED = NCTN_HISTORY_ALL.filter(row => {
+        // Filter by keyword
+        if (q){
+          const maPheDuyet = String(row['Mã phê duyệt'] || '').toLowerCase();
+          const tacVu = String(row['Tác vụ'] || '').toLowerCase();
+          const maTacVu = String(row['Mã tác vụ'] || '').toLowerCase();
+          const maBaoCao = String(row['Mã báo cáo'] || '').toLowerCase();
+          const searchText = [maPheDuyet, tacVu, maTacVu, maBaoCao].join(' ');
+          if (!searchText.includes(q)) return false;
+        }
+        
+        // Filter by date
+        const ngayDuyetStr = String(row['Ngày duyệt'] || '');
+        if (ngayDuyetStr){
+          // Parse date from format "DD/MM/YYYY HH:mm"
+          const dateMatch = ngayDuyetStr.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+          if (dateMatch){
+            const day = parseInt(dateMatch[1]);
+            const month = parseInt(dateMatch[2]) - 1;
+            const year = parseInt(dateMatch[3]);
+            const ngayDuyet = new Date(year, month, day);
+            
+            if (from){
+              const from0 = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+              if (ngayDuyet.getTime() < from0.getTime()) return false;
+            }
+            if (to){
+              const to0 = new Date(to.getFullYear(), to.getMonth(), to.getDate(), 23, 59, 59, 999);
+              if (ngayDuyet.getTime() > to0.getTime()) return false;
+            }
+          }
+        }
+        
+        return true;
+      });
+      
+      renderNctnHistoryTable();
+    }
+    
+    function renderNctnHistoryTable(){
+      const bodyEl = document.getElementById('nctn-history-body');
+      const countEl = document.getElementById('nctn-history-count');
+      
+      if (!bodyEl) return;
+      
+      // Update count
+      if (countEl){
+        const total = NCTN_HISTORY_ALL.length;
+        const filtered = NCTN_HISTORY_FILTERED.length;
+        if (total === filtered){
+          countEl.textContent = `Tổng: ${total} bản ghi`;
+        } else {
+          countEl.textContent = `Hiển thị: ${filtered}/${total} bản ghi`;
+        }
+      }
+      
+      if (!NCTN_HISTORY_FILTERED.length){
+        bodyEl.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500 text-sm" colspan="9">Không tìm thấy dữ liệu</td></tr>';
+        return;
+      }
+      
+      // Helper function to get value from object
+      function getValue(obj, key){
+        if (!obj || obj[key] === undefined || obj[key] === null) return null;
+        return String(obj[key]);
+      }
+      
+      // Helper function to format action badge
+      function formatAction(action){
+        if (!action || action === null) return '<span class="text-gray-500">-</span>';
+        const a = String(action).toLowerCase();
+        if(a === 'report_approve' || a.includes('approve')) {
+          return '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200">Duyệt</span>';
+        }
+        if(a === 'report_reject' || a.includes('reject')) {
+          return '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">Từ chối</span>';
+        }
+        return '<span class="text-gray-500">-</span>';
+      }
+      
+      // Helper function to format display value
+      function formatDisplay(value){
+        if (value === null || value === undefined || value === '') return '-';
+        return escapeHtml(String(value));
+      }
+      
+      bodyEl.innerHTML = NCTN_HISTORY_FILTERED.map((row, index)=>{
+        const stt = index + 1;
+        const maPheDuyet = getValue(row, 'Mã phê duyệt');
+        const tacVu = getValue(row, 'Tác vụ');
+        const maTacVu = getValue(row, 'Mã tác vụ');
+        const maBaoCao = getValue(row, 'Mã báo cáo');
+        const ngayDuyet = getValue(row, 'Ngày duyệt');
+        const soGio = getValue(row, 'Số giờ phê duyệt');
+        const luaChon = getValue(row, 'Lựa chọn');
+        const ghiChu = getValue(row, 'Ghi chú');
+        
+        return `
+          <tr>
+            <td class="px-3 py-2 text-center">${stt}</td>
+            <td class="px-3 py-2"><span class="font-medium text-rose-700">${formatDisplay(maPheDuyet)}</span></td>
+            <td class="px-3 py-2">${formatDisplay(tacVu)}</td>
+            <td class="px-3 py-2">${formatDisplay(maTacVu)}</td>
+            <td class="px-3 py-2">${formatDisplay(maBaoCao)}</td>
+            <td class="px-3 py-2">${formatDisplay(ngayDuyet)}</td>
+            <td class="px-3 py-2 text-right"><span class="font-medium">${formatDisplay(soGio)}</span></td>
+            <td class="px-3 py-2">${formatAction(luaChon)}</td>
+            <td class="px-3 py-2">${formatDisplay(ghiChu)}</td>
+          </tr>`;
+      }).join('');
+    }
+    
+    async function openNctnHistory(){
+      const modalId = 'modal-nctn-history';
+      const loadingEl = document.getElementById('nctn-history-loading');
+      const contentEl = document.getElementById('nctn-history-content');
+      const filtersEl = document.getElementById('nctn-history-filters');
+      const bodyEl = document.getElementById('nctn-history-body');
+      
+      // Reset modal state
+      if (loadingEl) loadingEl.style.display = 'block';
+      if (contentEl) contentEl.classList.add('hidden');
+      if (filtersEl) filtersEl.classList.add('hidden');
+      if (bodyEl) bodyEl.innerHTML = '<tr><td class="px-3 py-3 text-center text-gray-500 text-sm" colspan="9">Đang tải...</td></tr>';
+      
+      // Reset filters
+      const qInput = document.getElementById('nctn-history-flt-q');
+      const fromInput = document.getElementById('nctn-history-flt-from');
+      const toInput = document.getElementById('nctn-history-flt-to');
+      if (qInput) qInput.value = '';
+      if (fromInput) fromInput.value = '';
+      if (toInput) toInput.value = '';
+      
+      openModal(modalId);
+      
+      try{
+        // Fetch data from API
+        async function fetchJson(url){
+          try{
+            const r = await fetch(url, { method:'GET' });
+            const t = await r.text();
+            let parsed = null;
+            try{ parsed = JSON.parse(t); }catch{}
+            return { ok:r.ok, parsed, raw:t, status:r.status };
+          }catch(err){
+            return { ok:false, parsed:null, raw:String(err||''), status:0 };
+          }
+        }
+        
+        let resp = await fetchJson(NCTN_HISTORY_URL);
+        if (!resp.ok || /could not be started/i.test(String(resp.parsed?.message||''))){
+          resp = await fetchJson(NCTN_HISTORY_URL.replace('/webhook-test/','/webhook/'));
+        }
+        
+        if (!resp.ok){
+          throw new Error('Không thể tải dữ liệu lịch sử phê duyệt');
+        }
+        
+        // Parse data
+        const data = resp.parsed ?? (resp.raw ? JSON.parse(resp.raw) : []);
+        NCTN_HISTORY_ALL = Array.isArray(data) ? data : [];
+        NCTN_HISTORY_FILTERED = [...NCTN_HISTORY_ALL];
+        
+        // Show filters and render table
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (filtersEl) filtersEl.classList.remove('hidden');
+        if (contentEl) contentEl.classList.remove('hidden');
+        
+        renderNctnHistoryTable();
+      }catch(err){
+        console.error('Lỗi khi tải lịch sử phê duyệt NCTN:', err);
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (contentEl) contentEl.classList.remove('hidden');
+        if (bodyEl) bodyEl.innerHTML = `<tr><td class="px-3 py-3 text-center text-red-600 text-sm" colspan="9">Lỗi tải dữ liệu: ${escapeHtml(String(err||''))}</td></tr>`;
+        showToast('Lỗi tải lịch sử phê duyệt.','error');
       }
     }
 
