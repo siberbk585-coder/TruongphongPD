@@ -82,7 +82,7 @@
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <span>Phê duyệt</span>
         </div>
-        <div class="main-nav-item" data-section="phe-duyet-form">
+        <div class="main-nav-item" data-section="phe-duyet-form" style="display:none">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
           <span>Phê duyệt form</span>
         </div>
@@ -765,8 +765,8 @@
     const STATS_DETAIL_URL = 'https://iatzhxxuk.tino.page/webhook/fdf2d106-5b1c-46ca-bc8a-937ca7a9968d';  // action=stats_detail
 
     // ===== NCTN Endpoints
-    const NCTN_REPORTS_QUERY_URL = 'https://xcqiyibqs.tino.page/webhook/TracuuTPNCTN2';
-    const NCTN_FORM_ACTION_URL = 'https://xcqiyibqs.tino.page/webhook/15fd26a6-f47a-45f2-b3fb-60a51e294439';
+    const NCTN_REPORTS_QUERY_URL = 'https://xcqiyibqs.tino.page/webhook/LaydulieuPheduyetNCTN2';
+    const NCTN_FORM_ACTION_URL = 'https://xcqiyibqs.tino.page/webhook/TPpheduyetBCNCTN2';
 
     // ===== Phê duyệt Form Endpoints
     const PDFORM_QUERY_URL = 'https://iatzhxxuk.tino.page/webhook/PheduyenformTP'; // GET: lấy danh sách form chờ phê duyệt
@@ -1242,33 +1242,38 @@
       function getFrom(lowerObj, ...keys){ for(const k of keys){ const kk=String(k||'').toLowerCase(); if (lowerObj.hasOwnProperty(kk)) return lowerObj[kk]; } return ''; }
       const normalizedRows = rows.map(x=>{ 
         const lx=lowerKeyMap(x||{}); 
-        const id=getFrom(lx,'id','ID','Id','reportid'); 
-        const code=getFrom(lx,'code','mã báo cáo','ma','mã tác vụ','Mã tác vụ'); 
-        const title=getFrom(lx,'title','tiêu đề','name','Task Name','task name'); 
-        // Lấy giá trị Người lập: ưu tiên PICSPM (nếu có và có ký tự chữ), sau đó assignee/Assignee, cuối cùng là các trường khác
-        let reporter = '';
-        const picSpm = getFrom(lx,'picspm','PICSPM');
-        // Kiểm tra PICSPM có giá trị và có ít nhất 1 ký tự chữ
-        if (picSpm && String(picSpm).trim() && /[a-zA-ZÀ-ỹ]/.test(String(picSpm))) {
-          reporter = picSpm;
-        } else {
-          // Thử assignee/Assignee
-          reporter = getFrom(lx,'assignee','Assignee');
-          // Nếu vẫn rỗng, thử các trường khác
-          if (!reporter || !String(reporter).trim()) {
-            reporter = getFrom(lx,'reporter','reporterName','người lập','nguoilap','Người lập','người thực hiện','nguoithuchien','employee');
-          }
-        } 
-        const reporterEmail=getFrom(lx,'reporteremail','email'); 
-        const picComment=getFrom(lx,'piccomment','pic_comment','nhận xét pic','nhanxetpic','nhan_xet_pic'); 
-        const submitDate=getFrom(lx,'submitdate','ngày nộp','date','ngày cập nhật gần nhất','Ngày cập nhật gần nhất'); 
-        const wishDate=getFrom(lx,'wishdate','hạn mong muốn','Hạn mong muốn'); 
-        const dueDate=getFrom(lx,'duedate','deadline','hạn đánh giá','ngày hoàn thành thực tế','Ngày hoàn thành thực tế'); 
-        const statusRaw=getFrom(lx,'status','trạng thái','trangthai','kết quả','Kết quả'); 
+        // Map theo cấu trúc JSON mới
+        const id=getFrom(lx,'id','ID','Id'); 
+        const code=getFrom(lx,'mã tác vụ','mã tac vụ','matacvu','Mã tác vụ'); 
+        const title=getFrom(lx,'tên tác vụ','ten tac vu','tentacvu','Tên tác vụ'); 
+        // Người lập = Người thực hiện
+        const reporter=getFrom(lx,'người thực hiện','nguoi thuc hien','nguoithuchien','Người thực hiện'); 
+        // Email người nhận tác vụ
+        const reporterEmail=getFrom(lx,'email người nhận tác vụ','email nguoi nhan tac vu','emailnguoinhantacvu','Email người nhận tác vụ'); 
+        // Nhận xét PIC = Ghi chú báo cáo
+        const picComment=getFrom(lx,'ghi chú báo cáo','ghi chu bao cao','ghichubaocao','Ghi chú báo cáo'); 
+        // Ngày nộp = Ngày hoàn thành thực tế
+        const submitDate=getFrom(lx,'ngày hoàn thành thực tế','ngày hoàn thành thực tế','ngayhoanthucthuc','Ngày hoàn thành thực tế'); 
+        // Hạn mong muốn của các bên
+        const wishDate=getFrom(lx,'hạn mong muốn của các bên','hạn mong muốn của các bên','hanmongmuoncua cac ben','Hạn mong muốn của các bên'); 
+        // Ngày hoàn thành thực tế dùng làm dueDate
+        const dueDate=getFrom(lx,'ngày hoàn thành thực tế','ngày hoàn thành thực tế','ngayhoanthucthuc','Ngày hoàn thành thực tế'); 
+        // Kết quả = Trạng thái
+        const statusRaw=getFrom(lx,'kết quả','ket qua','ketqua','Kết quả'); 
         const status=normalizeNctnStatus(statusRaw); 
-        const conclusion=getFrom(lx,'conclusion','kết luận','Kết luận'); 
-        const leaderComment=getFrom(lx,'leadercomment','leader_comment','nhận xét leader','nhanxetleader','nhan_xet_leader','nhận xét trưởng nhóm','nhanxettruongnhom','nhan_xet_truong_nhom'); 
-        const reportUrl=getFrom(lx,'reporturl','liên kết báo cáo','url','link','href','link bcpdf','Link BCpdf'); 
+        // Kết luận = Mã báo cáo
+        const conclusion=getFrom(lx,'mã báo cáo','ma bao cao','mabaocao','Mã báo cáo'); 
+        // Mã báo cáo (lưu riêng để dễ truy cập)
+        const maBaoCao=getFrom(lx,'mã báo cáo','ma bao cao','mabaocao','Mã báo cáo'); 
+        // Nhận xét trưởng nhóm
+        const leaderComment=getFrom(lx,'nhận xét trưởng nhóm','nhan xet truong nhom','nhanxettruongnhom','Nhận xét trưởng nhóm'); 
+        // LinkBC
+        const reportUrl=getFrom(lx,'linkbc','link bc','LinkBC'); 
+        // Email người yêu cầu
+        const emailNgYeuCau=getFrom(lx,'email người yêu cầu','email nguoi yeu cau','emailnguoiyeucau','Email người yêu cầu');
+        // Email người nhận tác vụ
+        const emailNgNhanTacVu=getFrom(lx,'email người nhận tác vụ','email nguoi nhan tac vu','emailnguoinhantacvu','Email người nhận tác vụ');
+        // Lưu rawData để dùng cho các chức năng khác
         return { 
           id:id||code||'', 
           code:code||id||'', 
@@ -1283,7 +1288,11 @@
           statusRaw:statusRaw, 
           conclusion:conclusion||'', 
           leaderComment:leaderComment||'', 
-          reportUrl:reportUrl||'' 
+          reportUrl:reportUrl||'',
+          emailNgYeuCau: emailNgYeuCau||'', // Lưu trực tiếp vào object
+          emailNgNhanTacVu: emailNgNhanTacVu||'', // Lưu trực tiếp vào object
+          maBaoCao: maBaoCao||'', // Lưu trực tiếp Mã báo cáo vào object
+          rawData: x // Lưu toàn bộ dữ liệu gốc
         }; 
       }).filter(item => {
         // Lọc bỏ các trạng thái "Doing" - không hiển thị
@@ -1348,7 +1357,6 @@
               <div class="flex items-center gap-2">
                 <button class="px-3 py-1 rounded-full text-white font-semibold bg-primary-blue hover:brightness-105 act-approve ${disApprove}" data-id="${it.id}">Duyệt</button>
                 <button class="px-3 py-1 rounded-full text-white font-semibold act-reject ${disOther}" style="background:#ef4444" data-id="${it.id}">Từ chối</button>
-                <button class="px-3 py-1 rounded-full text-white font-semibold act-request ${disOther}" style="background:#f59e0b" data-id="${it.id}">Yêu cầu bổ sung</button>
               </div>
             </td>
             <td class="px-3 py-2"><a href="#" class="text-blue-700 underline report-link" data-id="${it.id}">${it.code}</a></td>
@@ -1615,11 +1623,41 @@
       const prev = btn.textContent; btn.disabled = true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang gửi...";
       const comment = (document.getElementById('approve-comment')?.value||'').trim();
       const qaCode = generateQaCode(CURRENT_CONTEXT);
-      // Lấy dữ liệu từ rawData
+      // Helper function để lấy giá trị từ rawData với nhiều key khác nhau
+      function getFromRawData(rawData, ...keys) {
+        if (!rawData || typeof rawData !== 'object') return '';
+        for (const key of keys) {
+          if (rawData[key] !== undefined && rawData[key] !== null && rawData[key] !== '') {
+            return String(rawData[key]);
+          }
+        }
+        // Thử tìm với key lowercase
+        const lowerMap = {};
+        try {
+          Object.keys(rawData).forEach(k => { lowerMap[String(k).toLowerCase()] = rawData[k]; });
+          for (const key of keys) {
+            const lowerKey = String(key).toLowerCase();
+            if (lowerMap[lowerKey] !== undefined && lowerMap[lowerKey] !== null && lowerMap[lowerKey] !== '') {
+              return String(lowerMap[lowerKey]);
+            }
+          }
+        } catch(_) {}
+        return '';
+      }
+      // Lấy dữ liệu từ object it, có fallback từ rawData
       const it = findItem(CURRENT_ITEM_ID);
-      const submitDate = it?.rawData?.['Ngày hoàn thành thực tế'] || '';
-      const maTacVu = it?.rawData?.['Mã tác vụ'] || '';
-      const tieuDe = it?.rawData?.['Task Name'] || '';
+      const rawData = it?.rawData || {};
+      const submitDate = it?.submitDate || getFromRawData(rawData, 'Ngày hoàn thành thực tế', 'ngày hoàn thành thực tế') || '';
+      // Lấy mã tác vụ và tên tác vụ từ code và title (đã được map)
+      const maTacVu = it?.code || getFromRawData(rawData, 'Mã tác vụ', 'mã tác vụ', 'Mat tac vu') || '';
+      const tieuDe = it?.title || getFromRawData(rawData, 'Tên tác vụ', 'tên tác vụ', 'Ten tac vu') || '';
+      // Lấy email từ object it đã được map, có fallback từ rawData
+      const emailNgYeuCau = it?.emailNgYeuCau || getFromRawData(rawData, 'Email người yêu cầu', 'email người yêu cầu', 'Email nguoi yeu cau') || '';
+      const emailNgNhanTacVu = it?.emailNgNhanTacVu || it?.reporterEmail || getFromRawData(rawData, 'Email người nhận tác vụ', 'email người nhận tác vụ', 'Email nguoi nhan tac vu') || '';
+      // Lấy LinkBC từ object it đã được map, có fallback từ rawData
+      const linkBC = it?.reportUrl || getFromRawData(rawData, 'LinkBC', 'linkbc', 'Link BC', 'link bc') || '';
+      // Lấy Mã báo cáo từ object it đã được map, có fallback từ conclusion hoặc rawData
+      const maBaoCao = it?.maBaoCao || it?.conclusion || getFromRawData(rawData, 'Mã báo cáo', 'mã báo cáo', 'Ma bao cao', 'mabaocao') || '';
       // Format sentDate giống submitDate: DD/MM/YYYY HH:mm
       const now = new Date();
       const dd = String(now.getDate()).padStart(2, '0');
@@ -1629,7 +1667,7 @@
       const min = String(now.getMinutes()).padStart(2, '0');
       const sentDate = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
       try{
-          const p = new URLSearchParams({ action:'report_approve', id:String(CURRENT_ITEM_ID), comment, qa_code: qaCode, submitDate: submitDate, sentDate: sentDate, ma_tac_vu: maTacVu, tieu_de: tieuDe, _ts: Date.now().toString() });
+          const p = new URLSearchParams({ action:'report_approve', id:String(CURRENT_ITEM_ID), comment, qa_code: qaCode, submitDate: submitDate, sentDate: sentDate, ma_tac_vu: maTacVu, tieu_de: tieuDe, email_nguoi_yeu_cau: emailNgYeuCau, email_nguoi_nhan_tac_vu: emailNgNhanTacVu, linkbc: linkBC, ma_bao_cao: maBaoCao, _ts: Date.now().toString() });
           async function tryPost(url){ try{ const r=await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
           async function tryPostNoCors(url){ try{ await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); return { ok:true, raw:'' }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
           async function tryGet(url){ try{ const r=await fetch(`${url}?${p.toString()}`, { method:'GET' }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
@@ -1643,29 +1681,27 @@
         // Đóng modal và hiển thị thông báo thành công
         closeModal('modal-approve'); 
         showToast(`Đã duyệt báo cáo. Mã: ${qaCode}`,'success');
-        // Tự động tải lại bảng sau khi phê duyệt thành công
-        // Thêm delay ngắn để đảm bảo server đã xử lý xong request
-        setTimeout(async () => {
-          try {
-            console.log('Bắt đầu reload bảng sau khi phê duyệt...');
-            if (CURRENT_CONTEXT==='NCTN'){ 
-              await reloadNctnDataSilent(); 
-            } else { 
-              await reloadDataSilent(); 
-            }
-            console.log('Đã reload bảng thành công');
-          } catch(reloadErr) {
-            console.error('Lỗi khi tải lại bảng:', reloadErr);
-            // Nếu reload thất bại, vẫn cố gắng render lại với dữ liệu hiện tại
-            if (CURRENT_CONTEXT==='NCTN'){ 
-              NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS); 
-              renderNctnTable(); 
-            } else { 
-              FILTERED = applyFilters(ALL_ITEMS); 
-              renderTable(); 
-            }
+        // Tự động tải lại bảng sau khi nhận phản hồi thành công từ webhook
+        // Chỉ reload khi đã nhận được phản hồi thành công
+        try {
+          console.log('Nhận phản hồi thành công từ webhook, bắt đầu reload bảng...');
+          if (CURRENT_CONTEXT==='NCTN'){ 
+            await reloadNctnDataSilent(); 
+          } else { 
+            await reloadDataSilent(); 
           }
-        }, 500); // Delay 500ms để đảm bảo server đã xử lý xong
+          console.log('Đã reload bảng thành công sau khi nhận phản hồi từ webhook');
+        } catch(reloadErr) {
+          console.error('Lỗi khi tải lại bảng:', reloadErr);
+          // Nếu reload thất bại, vẫn cố gắng render lại với dữ liệu hiện tại
+          if (CURRENT_CONTEXT==='NCTN'){ 
+            NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS); 
+            renderNctnTable(); 
+          } else { 
+            FILTERED = applyFilters(ALL_ITEMS); 
+            renderTable(); 
+          }
+        }
       }catch(err){ showToast('Lỗi duyệt báo cáo.','error'); }
       finally{ btn.disabled=false; btn.textContent = prev||'Xác nhận duyệt'; }
     }
@@ -1675,11 +1711,41 @@
       const reason = (document.getElementById('reject-reason')?.value||'').trim();
       if (!reason){ showToast('Vui lòng nhập lý do.','error'); btn.disabled=false; btn.textContent=prev; return; }
       const qaCode = generateQaCode(CURRENT_CONTEXT);
-      // Lấy dữ liệu từ rawData (giống như doApprove)
+      // Helper function để lấy giá trị từ rawData với nhiều key khác nhau
+      function getFromRawData(rawData, ...keys) {
+        if (!rawData || typeof rawData !== 'object') return '';
+        for (const key of keys) {
+          if (rawData[key] !== undefined && rawData[key] !== null && rawData[key] !== '') {
+            return String(rawData[key]);
+          }
+        }
+        // Thử tìm với key lowercase
+        const lowerMap = {};
+        try {
+          Object.keys(rawData).forEach(k => { lowerMap[String(k).toLowerCase()] = rawData[k]; });
+          for (const key of keys) {
+            const lowerKey = String(key).toLowerCase();
+            if (lowerMap[lowerKey] !== undefined && lowerMap[lowerKey] !== null && lowerMap[lowerKey] !== '') {
+              return String(lowerMap[lowerKey]);
+            }
+          }
+        } catch(_) {}
+        return '';
+      }
+      // Lấy dữ liệu từ object it, có fallback từ rawData (giống như doApprove)
       const it = findItem(CURRENT_ITEM_ID);
-      const submitDate = it?.rawData?.['Ngày hoàn thành thực tế'] || '';
-      const maTacVu = it?.rawData?.['Mã tác vụ'] || '';
-      const tieuDe = it?.rawData?.['Task Name'] || '';
+      const rawData = it?.rawData || {};
+      const submitDate = it?.submitDate || getFromRawData(rawData, 'Ngày hoàn thành thực tế', 'ngày hoàn thành thực tế') || '';
+      // Lấy mã tác vụ và tên tác vụ từ code và title (đã được map)
+      const maTacVu = it?.code || getFromRawData(rawData, 'Mã tác vụ', 'mã tác vụ', 'Mat tac vu') || '';
+      const tieuDe = it?.title || getFromRawData(rawData, 'Tên tác vụ', 'tên tác vụ', 'Ten tac vu') || '';
+      // Lấy email từ object it đã được map, có fallback từ rawData
+      const emailNgYeuCau = it?.emailNgYeuCau || getFromRawData(rawData, 'Email người yêu cầu', 'email người yêu cầu', 'Email nguoi yeu cau') || '';
+      const emailNgNhanTacVu = it?.emailNgNhanTacVu || it?.reporterEmail || getFromRawData(rawData, 'Email người nhận tác vụ', 'email người nhận tác vụ', 'Email nguoi nhan tac vu') || '';
+      // Lấy LinkBC từ object it đã được map, có fallback từ rawData
+      const linkBC = it?.reportUrl || getFromRawData(rawData, 'LinkBC', 'linkbc', 'Link BC', 'link bc') || '';
+      // Lấy Mã báo cáo từ object it đã được map, có fallback từ conclusion hoặc rawData
+      const maBaoCao = it?.maBaoCao || it?.conclusion || getFromRawData(rawData, 'Mã báo cáo', 'mã báo cáo', 'Ma bao cao', 'mabaocao') || '';
       // Format sentDate giống submitDate: DD/MM/YYYY HH:mm
       const now = new Date();
       const dd = String(now.getDate()).padStart(2, '0');
@@ -1689,8 +1755,8 @@
       const min = String(now.getMinutes()).padStart(2, '0');
       const sentDate = `${dd}/${mm}/${yyyy} ${hh}:${min}`;
       try{
-          const p = new URLSearchParams({ action:'report_reject', id:String(CURRENT_ITEM_ID), reason, qa_code: qaCode, submitDate: submitDate, sentDate: sentDate, ma_tac_vu: maTacVu, tieu_de: tieuDe, _ts: Date.now().toString() });
-          console.log('[doReject] Payload:', { action:'report_reject', id:String(CURRENT_ITEM_ID), reason, qa_code: qaCode, submitDate, sentDate, ma_tac_vu: maTacVu, tieu_de: tieuDe });
+          const p = new URLSearchParams({ action:'report_reject', id:String(CURRENT_ITEM_ID), reason, qa_code: qaCode, submitDate: submitDate, sentDate: sentDate, ma_tac_vu: maTacVu, tieu_de: tieuDe, email_nguoi_yeu_cau: emailNgYeuCau, email_nguoi_nhan_tac_vu: emailNgNhanTacVu, linkbc: linkBC, ma_bao_cao: maBaoCao, _ts: Date.now().toString() });
+          console.log('[doReject] Payload:', { action:'report_reject', id:String(CURRENT_ITEM_ID), reason, qa_code: qaCode, submitDate, sentDate, ma_tac_vu: maTacVu, tieu_de: tieuDe, email_nguoi_yeu_cau: emailNgYeuCau, email_nguoi_nhan_tac_vu: emailNgNhanTacVu, linkbc: linkBC, ma_bao_cao: maBaoCao });
           async function tryPost(url){ try{ const r=await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
           async function tryPostNoCors(url){ try{ await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); return { ok:true, raw:'' }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
           async function tryGet(url){ try{ const r=await fetch(`${url}?${p.toString()}`, { method:'GET' }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
@@ -1701,9 +1767,30 @@
           if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryPost(ACTION_URL.replace('/webhook-test/','/webhook/'));
           if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(ACTION_URL.replace('/webhook-test/','/webhook/'));
           if (!r.ok) throw new Error(r.raw||'Gửi thất bại');
-        closeModal('modal-reject'); showToast(`Đã từ chối. Mã: ${qaCode}`,'success');
-        if (CURRENT_CONTEXT==='NCTN'){ NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS); renderNctnTable(); }
-        else { FILTERED = applyFilters(ALL_ITEMS); renderTable(); }
+        // Đóng modal và hiển thị thông báo thành công
+        closeModal('modal-reject'); 
+        showToast(`Đã từ chối. Mã: ${qaCode}`,'success');
+        // Tự động tải lại bảng sau khi nhận phản hồi thành công từ webhook
+        // Chỉ reload khi đã nhận được phản hồi thành công
+        try {
+          console.log('Nhận phản hồi thành công từ webhook, bắt đầu reload bảng...');
+          if (CURRENT_CONTEXT==='NCTN'){ 
+            await reloadNctnDataSilent(); 
+          } else { 
+            await reloadDataSilent(); 
+          }
+          console.log('Đã reload bảng thành công sau khi nhận phản hồi từ webhook');
+        } catch(reloadErr) {
+          console.error('Lỗi khi tải lại bảng:', reloadErr);
+          // Nếu reload thất bại, vẫn cố gắng render lại với dữ liệu hiện tại
+          if (CURRENT_CONTEXT==='NCTN'){ 
+            NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS); 
+            renderNctnTable(); 
+          } else { 
+            FILTERED = applyFilters(ALL_ITEMS); 
+            renderTable(); 
+          }
+        }
       }catch(err){ showToast('Lỗi từ chối.','error'); }
       finally{ btn.disabled=false; btn.textContent = prev||'Xác nhận từ chối'; }
     }
@@ -1903,6 +1990,7 @@
       const nctnBody = document.getElementById('nctn-list-body');
       nctnBody.addEventListener('click', (e)=>{
         console.log('NCTN: Click detected on:', e.target);
+        CURRENT_CONTEXT = 'NCTN'; // Đảm bảo context luôn là NCTN khi tương tác với bảng NCTN
         const link = e.target.closest('.report-link');
         if (link){ 
           e.preventDefault(); 
