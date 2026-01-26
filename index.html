@@ -34,11 +34,13 @@
     .table-zebra tbody tr:nth-child(even){ background-color:#f8fafc; }
     .table-vdiv{ border-collapse: separate; border-spacing: 0; }
     .table-vdiv th+th, .table-vdiv td+td{ border-left:1px solid #e5e7eb; }
-    /* Custom scrollbar for modal stats */
-    #stats-content::-webkit-scrollbar{ width:8px; }
-    #stats-content::-webkit-scrollbar-track{ background:#f1f1f1; border-radius:4px; }
-    #stats-content::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:4px; }
-    #stats-content::-webkit-scrollbar-thumb:hover{ background:#94a3b8; }
+    /* Custom scrollbar for modal stats - áp dụng cho tất cả các tab */
+    .modal-tab-content::-webkit-scrollbar{ width:10px; }
+    .modal-tab-content::-webkit-scrollbar-track{ background:#f1f1f1; border-radius:5px; }
+    .modal-tab-content::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:5px; border:1px solid #e2e8f0; }
+    .modal-tab-content::-webkit-scrollbar-thumb:hover{ background:#94a3b8; }
+    /* Scrollbar for Firefox */
+    .modal-tab-content{scrollbar-width:thin;scrollbar-color:#cbd5e1 #f1f1f1}
     .submit-btn{background:linear-gradient(135deg,#3b82f6 0%,#60a5fa 100%);box-shadow:0 4px 6px rgba(37,99,235,.1),0 1px 3px rgba(37,99,235,.08);transition:transform .2s ease,box-shadow .2s ease,opacity .2s ease,filter .2s ease;border-radius:9999px;position:relative}
     .submit-btn:hover{transform:translateY(-1px);box-shadow:0 7px 14px rgba(37,99,235,.12),0 3px 6px rgba(37,99,235,.08);filter:brightness(1.03)}
     .submit-btn:active{transform:translateY(0);opacity:.95}
@@ -61,6 +63,19 @@
     .section-content{animation:fadeIn .3s ease-in}
     @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     @media (max-width:768px){.main-nav-container{overflow-x:auto;scrollbar-width:thin}.main-nav-item{padding:14px 16px;font-size:14px}}
+    /* Modal Tabs */
+    .modal-tabs{display:flex;gap:0;border-bottom:2px solid #e5e7eb;margin:-6px -6px 16px -6px;padding:0 6px;flex-shrink:0}
+    .modal-tab{position:relative;padding:12px 20px;cursor:pointer;transition:all .25s;color:#64748b;font-weight:500;font-size:14px;border-bottom:3px solid transparent;white-space:nowrap;background:transparent}
+    .modal-tab:hover{color:#2563eb;background:#f8fafc}
+    .modal-tab.active{color:#2563eb;border-bottom-color:#2563eb;font-weight:600}
+    .modal-tab-content{display:none;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;flex-direction:column;position:relative;width:100%;max-width:100%}
+    .modal-tab-content.active{display:flex}
+    .modal-tab-content > div{flex:1;overflow:visible;padding-right:8px;min-height:0;position:relative;width:100%}
+    #stats-content{overflow:visible !important;height:auto !important;max-height:none !important;display:block !important;position:relative}
+    #stats-tab1, #stats-tab2, #stats-tab3{overflow-y:auto !important;overflow-x:hidden !important;flex:1 !important;min-height:0 !important}
+    #modal-stats .modal-tab-content{max-width:100%;width:100%;contain:layout style paint}
+    #modal-stats .modal-tab-content *{max-width:100%;box-sizing:border-box}
+    @media (max-width:768px){.modal-tab{padding:10px 16px;font-size:13px}}
   </style>
 </head>
 <body class="bg-muted min-h-screen text-gray-800" style="font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'">
@@ -579,9 +594,9 @@
 
   <!-- Modal Stats Detail -->
   <div id="modal-stats" class="modal" aria-hidden="true">
-    <div class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 flex flex-col max-h-[90vh]">
+    <div class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 flex flex-col max-h-[90vh] relative">
       <div class="flex items-center justify-between mb-4 flex-shrink-0">
-        <h3 class="text-xl font-semibold text-blue-800" id="stats-title">Thống kê chi tiết</h3>
+        <h3 class="text-xl font-semibold text-blue-800" id="stats-title">Thống kê sơ bộ</h3>
         <button data-close="modal-stats" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
       </div>
       
@@ -590,7 +605,17 @@
         <p class="text-gray-600">Đang tải dữ liệu...</p>
       </div>
       
-      <div id="stats-content" class="hidden overflow-y-auto flex-1 pr-2">
+      <!-- Tab Navigation -->
+      <div id="stats-tabs-nav" class="modal-tabs hidden">
+        <div class="modal-tab active" data-tab="tab1">Thống kê sơ bộ</div>
+        <div class="modal-tab" data-tab="tab2">Điểm NG</div>
+        <div class="modal-tab" data-tab="tab3">Nội dung báo cáo</div>
+      </div>
+      
+      <!-- Tab Content Container - Đảm bảo tất cả tab content nằm trong đây -->
+      <div class="flex-1 min-h-0 relative" style="flex: 1 1 0%; min-height: 0; display: flex; flex-direction: column;">
+      <div id="stats-tab1" class="modal-tab-content active" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;">
+        <div id="stats-content" class="pr-2" style="padding: 16px;">
         <!-- a. Thông tin bổ sung -->
         <div class="mb-6">
           <h4 class="font-semibold text-gray-800 mb-3 text-lg">a. Thông tin bổ sung</h4>
@@ -704,6 +729,32 @@
             <div class="text-sm text-gray-700 whitespace-pre-line" id="stats-phat-hien-bat-thuong-ai"></div>
           </div>
         </div>
+      </div>
+      </div>
+      
+      <!-- Tab 2: Điểm NG -->
+      <div id="stats-tab2" class="modal-tab-content" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;">
+        <div class="pr-2" style="padding: 16px;">
+          <div id="diemng-content">
+            <div class="text-center py-8 text-gray-500">
+              <p class="text-lg font-medium mb-2">Điểm NG</p>
+              <p class="text-sm">Đang tải dữ liệu...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Tab 3: Nội dung báo cáo -->
+      <div id="stats-tab3" class="modal-tab-content" style="flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden;">
+        <div class="pr-2" style="padding: 16px;">
+          <div id="baocao-content">
+            <div class="text-center py-8 text-gray-500">
+              <p class="text-lg font-medium mb-2">Nội dung báo cáo</p>
+              <p class="text-sm">Đang tải dữ liệu...</p>
+            </div>
+          </div>
+        </div>
+      </div>
       </div>
       
       <div class="mt-6 flex items-center justify-end gap-2 flex-shrink-0">
@@ -1532,10 +1583,20 @@
       const titleEl = document.getElementById('stats-title');
       const loadingEl = document.getElementById('stats-loading');
       const contentEl = document.getElementById('stats-content');
+      const tabsNav = document.getElementById('stats-tabs-nav');
       
       // Reset modal state
       if (loadingEl) loadingEl.style.display = 'block';
-      if (contentEl) contentEl.classList.add('hidden');
+      if (contentEl) contentEl.classList.remove('hidden');
+      if (tabsNav) tabsNav.classList.add('hidden');
+      
+      // Reset tabs - chỉ hiển thị tab 1 và ẩn các tab khác
+      const tab1 = document.getElementById('stats-tab1');
+      const tab2 = document.getElementById('stats-tab2');
+      const tab3 = document.getElementById('stats-tab3');
+      if (tab1) tab1.classList.add('active');
+      if (tab2) tab2.classList.remove('active');
+      if (tab3) tab3.classList.remove('active');
       
       // Reset tất cả các section về hiển thị (sẽ ẩn sau nếu không có dữ liệu)
       const sections = ['stats-section-d', 'stats-section-e', 'stats-section-f'];
@@ -1545,7 +1606,7 @@
       });
       
       const it = findItem(id);
-      if (titleEl) titleEl.textContent = it ? `Thống kê chi tiết - ${it.code}` : 'Thống kê chi tiết';
+      if (titleEl) titleEl.textContent = it ? `Thống kê sơ bộ - ${it.code}` : 'Thống kê sơ bộ';
       
       if (!it || !it.rawData) {
         if (loadingEl) loadingEl.innerHTML = '<div class="text-red-600">Không tìm thấy dữ liệu</div>';
@@ -1679,9 +1740,71 @@
         const elPhatHienBatThuongAI = document.getElementById('stats-phat-hien-bat-thuong-ai');
         if (elPhatHienBatThuongAI) elPhatHienBatThuongAI.textContent = stats['Phát hiện bất thường AI'] || '';
         
+        // Helper function to get value with multiple possible keys
+        function getFromStats(...keys) {
+          for (const key of keys) {
+            if (stats[key] !== undefined && stats[key] !== null && stats[key] !== '') {
+              return stats[key];
+            }
+            // Try lowercase
+            const lowerKey = key.toLowerCase();
+            if (stats[lowerKey] !== undefined && stats[lowerKey] !== null && stats[lowerKey] !== '') {
+              return stats[lowerKey];
+            }
+          }
+          return null;
+        }
+        
+        // Debug: Log tất cả keys trong stats để kiểm tra
+        console.log('All keys in stats:', Object.keys(stats));
+        console.log('Stats object:', stats);
+        
+        // Populate Tab 2: Điểm NG - thử nhiều key khác nhau
+        const diemNGValue = getFromStats('DiemNG', 'diemng', 'Điểm NG', 'điểm ng', 'Điểm(Backup)');
+        console.log('DiemNG value found:', diemNGValue);
+        
+        // Kiểm tra lỗi về THEM từ DiemNG để hiển thị ở tab 3
+        let themError = null;
+        if (diemNGValue) {
+          try {
+            const diemNGArray = typeof diemNGValue === 'string' ? JSON.parse(diemNGValue) : diemNGValue;
+            if (Array.isArray(diemNGArray)) {
+              for (const item of diemNGArray) {
+                const errorMsg = item.error || (item.data && item.data.error) || '';
+                // Kiểm tra nhiều cách viết lỗi về THEM
+                if (errorMsg && (
+                  errorMsg.includes('THEM') || 
+                  errorMsg.includes('sheet called') ||
+                  errorMsg.toLowerCase().includes('them') ||
+                  errorMsg.includes('Thêm')
+                )) {
+                  themError = errorMsg;
+                  console.log('Found THEM error:', themError);
+                  break;
+                }
+              }
+            }
+          } catch (e) {
+            console.error('Error checking THEM error:', e);
+          }
+        }
+        
+        console.log('THEM error to display:', themError);
+        
+        populateDiemNG(diemNGValue, themError);
+        
+        // Populate Tab 3: Nội dung báo cáo - thử nhiều key khác nhau
+        const baoCaoValue = getFromStats('Baocaosohoa', 'baocaosohoa', 'Báo cáo số hóa', 'báo cáo số hóa');
+        console.log('Baocaosohoa value found:', baoCaoValue);
+        populateBaoCaoSoHoa(baoCaoValue, themError);
+        
         // Show content and hide loading
         if (loadingEl) loadingEl.style.display = 'none';
         if (contentEl) contentEl.classList.remove('hidden');
+        if (tabsNav) tabsNav.classList.remove('hidden');
+        
+        // Đảm bảo tab 1 được active
+        switchTab('tab1');
         
       } catch (err) {
         console.error('Error loading stats:', err);
@@ -1690,6 +1813,437 @@
       
       openModal(modalId);
     }
+    
+    // Tab switching function
+    function switchTab(tabId) {
+      // Hide all tab contents
+      document.querySelectorAll('.modal-tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.modal-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      const selectedTabContent = document.getElementById(`stats-${tabId}`);
+      if (selectedTabContent) {
+        selectedTabContent.classList.add('active');
+      }
+      
+      // Add active class to selected tab
+      const selectedTab = document.querySelector(`.modal-tab[data-tab="${tabId}"]`);
+      if (selectedTab) {
+        selectedTab.classList.add('active');
+      }
+    }
+    
+    // Populate Tab 2: Điểm NG
+    function populateDiemNG(diemNGData, themError) {
+      const container = document.getElementById('diemng-content');
+      if (!container) {
+        console.error('diemng-content container not found!');
+        return;
+      }
+      
+      // Đảm bảo container nằm trong modal và không bị di chuyển
+      const tab2 = document.getElementById('stats-tab2');
+      if (!tab2 || !tab2.contains(container)) {
+        console.error('diemng-content is not inside stats-tab2!');
+        return;
+      }
+      
+      if (!diemNGData) {
+        container.innerHTML = '<div class="text-center py-8 text-gray-500"><p class="text-sm">Không có dữ liệu điểm NG</p></div>';
+        return;
+      }
+      
+      try {
+        // Log để debug
+        console.log('DiemNG raw data:', diemNGData);
+        
+        let diemNGArray;
+        if (typeof diemNGData === 'string') {
+          // Thử parse JSON
+          try {
+            diemNGArray = JSON.parse(diemNGData);
+          } catch (e) {
+            // Nếu không phải JSON string, có thể là array string
+            console.error('Error parsing DiemNG as JSON:', e);
+            container.innerHTML = '<div class="text-center py-8 text-red-500"><p class="text-sm">Lỗi định dạng dữ liệu điểm NG</p></div>';
+            return;
+          }
+        } else if (Array.isArray(diemNGData)) {
+          diemNGArray = diemNGData;
+        } else {
+          // Nếu là object, thử wrap vào array
+          diemNGArray = [diemNGData];
+        }
+        
+        if (!Array.isArray(diemNGArray) || diemNGArray.length === 0) {
+          container.innerHTML = '<div class="text-center py-8 text-gray-500"><p class="text-sm">Không có dữ liệu điểm NG</p></div>';
+          return;
+        }
+        
+        console.log('DiemNG parsed array:', diemNGArray);
+        
+        let html = '<div class="space-y-4">';
+        
+        diemNGArray.forEach((item, index) => {
+          // Xử lý nhiều format khác nhau
+          let data = {};
+          let maBaoCao = 'N/A';
+          
+          if (item.data && typeof item.data === 'object') {
+            data = item.data;
+          } else if (typeof item === 'object' && !item.data) {
+            // Nếu item chính là data
+            data = item;
+          }
+          
+          maBaoCao = item['Mã báo cáo'] || item.ma_bao_cao || item.maBaoCao || 'N/A';
+          
+          // Bỏ qua lỗi về THEM - sẽ hiển thị ở tab 3
+          const errorMsg = item.error || data.error || '';
+          const isThemError = errorMsg && (errorMsg.includes('THEM') || errorMsg.includes('sheet called'));
+          
+          html += `
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div class="flex items-center justify-between mb-3">
+                <h4 class="font-semibold text-red-800 text-lg">Điểm NG ${index + 1}</h4>
+                <span class="text-sm text-red-700 bg-red-100 px-2 py-1 rounded">${maBaoCao}</span>
+              </div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div><span class="font-medium text-gray-700">Mã danh mục:</span> <span class="text-gray-900">${data.ma_danh_muc || data['Mã danh mục'] || 'N/A'}</span></div>
+                <div><span class="font-medium text-gray-700">Công chuẩn:</span> <span class="text-gray-900">${data.cong_chuan || data['Công chuẩn'] || 'N/A'}</span></div>
+                <div class="md:col-span-2"><span class="font-medium text-gray-700">Hạng mục kiểm tra:</span> <span class="text-gray-900">${data.hang_muc || data['Hạng mục'] || data['Hạng mục kiểm tra'] || 'N/A'}</span></div>
+                <div class="md:col-span-2"><span class="font-medium text-gray-700">Tiêu chuẩn:</span> <span class="text-gray-900">${data.tieu_chuan || data['Tiêu chuẩn'] || 'N/A'}</span></div>
+                <div><span class="font-medium text-gray-700">Công cụ:</span> <span class="text-gray-900">${data.cong_cu || data['Công cụ'] || 'N/A'}</span></div>
+                <div><span class="font-medium text-gray-700">Loại test:</span> <span class="text-gray-900">${data.test_type || data['Loại test'] || 'N/A'}</span></div>
+                <div class="md:col-span-2"><span class="font-medium text-gray-700">Đánh giá:</span> <span class="text-red-600 font-semibold">${data.danh_gia || data['Đánh giá'] || 'NG'}</span></div>
+              </div>
+              
+              ${(data.ghi_chu_hang_muc || data['Ghi chú']) ? `<div class="mt-3"><span class="font-medium text-gray-700">Ghi chú:</span> <span class="text-gray-900">${data.ghi_chu_hang_muc || data['Ghi chú'] || ''}</span></div>` : ''}
+              
+              <div class="mt-4">
+                <div class="font-medium text-gray-700 mb-2">Kết quả mẫu:</div>
+                <div class="grid grid-cols-5 gap-2 text-sm">
+                  ${['m1', 'm2', 'm3', 'm4', 'm5'].map((m, idx) => {
+                    const mValue = data[m] || data[m.toUpperCase()] || data[`M${idx + 1}`] || '-';
+                    const isFail = mValue && (mValue.includes('Không đạt') || mValue.includes('không đạt') || mValue.toLowerCase().includes('fail'));
+                    return `<div class="bg-white p-2 rounded border"><span class="font-medium">M${idx + 1}:</span> <span class="${isFail ? 'text-red-600 font-semibold' : 'text-gray-900'}">${mValue}</span></div>`;
+                  }).join('')}
+                </div>
+              </div>
+              
+              ${(errorMsg && !isThemError) ? `<div class="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-sm text-yellow-800"><span class="font-medium">Lỗi:</span> ${errorMsg}</div>` : ''}
+            </div>
+          `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        
+        // Đảm bảo container vẫn nằm trong tab2 sau khi update
+        if (!tab2.contains(container)) {
+          console.error('Container was moved outside tab2 after update!');
+          const wrapper = tab2.querySelector('.overflow-y-auto.flex-1');
+          if (wrapper) {
+            wrapper.appendChild(container);
+          }
+        }
+      } catch (err) {
+        console.error('Error parsing DiemNG:', err);
+        container.innerHTML = '<div class="text-center py-8 text-red-500"><p class="text-sm">Lỗi xử lý dữ liệu điểm NG</p></div>';
+      }
+    }
+    
+    // Populate Tab 3: Nội dung báo cáo
+    function populateBaoCaoSoHoa(baoCaoData, themError) {
+      const container = document.getElementById('baocao-content');
+      if (!container) return;
+      
+      if (!baoCaoData && !themError) {
+        container.innerHTML = '<div class="text-center py-8 text-gray-500"><p class="text-sm">Không có dữ liệu báo cáo số hóa</p></div>';
+        return;
+      }
+      
+      // Helper function: Hiển thị giá trị đúng cách (0 là giá trị hợp lệ, không phải "không có")
+      function formatValue(value) {
+        // Nếu là số 0, hiển thị 0
+        if (value === 0 || value === '0') return '0';
+        // Nếu là null, undefined, hoặc chuỗi rỗng, hiển thị '-'
+        if (value === null || value === undefined || value === '') return '-';
+        // Nếu là chuỗi "-", hiển thị '-'
+        if (value === '-') return '-';
+        // Các trường hợp khác, hiển thị giá trị
+        return String(value);
+      }
+      
+      try {
+        let html = '<div class="space-y-6">';
+        
+        // Hiển thị thông báo về lỗi THEM ở đầu tab
+        if (themError) {
+          html += `
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div class="flex items-start gap-3">
+                <div class="flex-shrink-0">
+                  <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                </div>
+                <div class="flex-1">
+                  <h4 class="font-semibold text-blue-800 text-lg mb-1">Báo cáo không có hạng mục THÊM</h4>
+                  <p class="text-blue-600 text-sm">${themError}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        if (!baoCaoData) {
+          html += '</div>';
+          container.innerHTML = html;
+          return;
+        }
+        
+        const baoCaoArray = typeof baoCaoData === 'string' ? JSON.parse(baoCaoData) : baoCaoData;
+        
+        if (!Array.isArray(baoCaoArray) || baoCaoArray.length === 0) {
+          html += '</div>';
+          container.innerHTML = html;
+          return;
+        }
+        
+        const baoCao = baoCaoArray[0]; // Lấy báo cáo đầu tiên
+        const body = baoCao.body || {};
+        const chuKy = baoCao.Chu_ky || {};
+        const data = baoCao.data || [];
+        const rows = baoCao.rows || [];
+        
+        // Thông tin chung
+        html += `
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <h4 class="font-semibold text-blue-800 text-lg mb-4">Thông tin chung</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+              <div><span class="font-medium text-gray-700">Mã tác vụ:</span> <span class="text-gray-900">${body.ma_tac_vu || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">Mã vật tư:</span> <span class="text-gray-900">${baoCao.Ma_vat_tu || 'N/A'}</span></div>
+              <div class="md:col-span-2"><span class="font-medium text-gray-700">Tên vật tư:</span> <span class="text-gray-900">${baoCao.Ten_vat_tu || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">NCC/BP:</span> <span class="text-gray-900">${baoCao.NCC_BP || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">Bộ phận:</span> <span class="text-gray-900">${baoCao.Bo_phan || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">Mã số yêu cầu:</span> <span class="text-gray-900">${baoCao.Ma_so_yeu_cau || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">Ngày giao mẫu:</span> <span class="text-gray-900">${baoCao.Ngay_giao_mau || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">Ngày hoàn thành:</span> <span class="text-gray-900">${baoCao.Ngay_hoan_thanh || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">Số lượng mẫu:</span> <span class="text-gray-900">${baoCao.So_luong_mau || 'N/A'}</span></div>
+              <div><span class="font-medium text-gray-700">Tiêu chuẩn áp dụng:</span> <span class="text-gray-900">${baoCao.Tieu_chuan_ap_dung || 'N/A'}</span></div>
+              <div class="md:col-span-2"><span class="font-medium text-gray-700">Thiết bị thử nghiệm:</span> <span class="text-gray-900">${baoCao.Thiet_bi_thu_nghiem || 'N/A'}</span></div>
+              <div class="md:col-span-2"><span class="font-medium text-gray-700">Mục đích đánh giá:</span> <span class="text-gray-900">${baoCao.Muc_dich_danh_gia || 'N/A'}</span></div>
+            </div>
+          </div>
+        `;
+        
+        // Kết quả đánh giá
+        html += `
+          <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <h4 class="font-semibold text-green-800 text-lg mb-3">Kết quả đánh giá</h4>
+            <div class="text-sm">
+              <div class="mb-2"><span class="font-medium text-gray-700">Kết luận:</span> <span class="text-green-700 font-semibold">${baoCao.Ket_qua_danh_gia || 'N/A'}</span></div>
+              ${baoCao.Nhan_xet ? `<div class="mt-2"><span class="font-medium text-gray-700">Nhận xét:</span> <div class="text-gray-900 mt-1 whitespace-pre-line">${baoCao.Nhan_xet}</div></div>` : ''}
+              ${baoCao.Ke_hoach_test_ben && Array.isArray(baoCao.Ke_hoach_test_ben) ? `<div class="mt-2"><span class="font-medium text-gray-700">Kế hoạch test bền:</span> <span class="text-gray-900">${baoCao.Ke_hoach_test_ben.join(', ')}</span></div>` : ''}
+            </div>
+          </div>
+        `;
+        
+        // Chu kỳ phê duyệt
+        html += `
+          <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <h4 class="font-semibold text-purple-800 text-lg mb-3">Chu kỳ phê duyệt</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div><span class="font-medium text-gray-700">Người lập:</span> <span class="text-gray-900">${chuKy.NguoiLap || 'N/A'}</span> <span class="text-gray-500 text-xs">(${chuKy.Ngay_NguoiLap || 'N/A'})</span></div>
+              <div><span class="font-medium text-gray-700">Kiểm tra:</span> <span class="text-gray-900">${chuKy.KiemTra || 'N/A'}</span> <span class="text-gray-500 text-xs">(${chuKy.Ngay_KiemTra || 'N/A'})</span></div>
+              <div><span class="font-medium text-gray-700">Xác nhận 1:</span> <span class="text-gray-900">${chuKy.XacNhan_1 || 'N/A'}</span> <span class="text-gray-500 text-xs">(${chuKy.Ngay_XacNhan_1 || 'N/A'})</span></div>
+              <div><span class="font-medium text-gray-700">Xác nhận 2:</span> <span class="text-gray-900">${chuKy.XacNhan_2 || 'N/A'}</span> <span class="text-gray-500 text-xs">(${chuKy.Ngay_XacNhan_2 || 'N/A'})</span></div>
+              <div class="md:col-span-2"><span class="font-medium text-gray-700">Phê duyệt:</span> <span class="text-gray-900">${chuKy.PheDuyet || 'N/A'}</span> <span class="text-gray-500 text-xs">(${chuKy.Ngay_PheDuyet || 'N/A'})</span></div>
+            </div>
+          </div>
+        `;
+        
+        // ========== PHẦN 1: SHEET TCKT ==========
+        html += `<div class="bg-indigo-50 border-2 border-indigo-300 rounded-lg p-4 mb-6">`;
+        html += `<h4 class="font-semibold text-indigo-800 text-xl mb-4">📊 Sheet TCKT</h4>`;
+        
+        // Thống kê sheet TCKT
+        if (data.length > 0 && data[0].thong_ke) {
+          const thongKe = data[0].thong_ke;
+          html += `
+            <div class="bg-white border border-indigo-200 rounded-lg p-4 mb-4">
+              <h5 class="font-semibold text-indigo-700 text-lg mb-3">Thống kê</h5>
+              <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+                <div><span class="font-medium text-gray-700">Tổng:</span> <span class="text-indigo-700 font-semibold">${thongKe.total || 0}</span></div>
+                <div><span class="font-medium text-gray-700">OK:</span> <span class="text-green-700 font-semibold">${thongKe.OK || 0}</span></div>
+                <div><span class="font-medium text-gray-700">NG:</span> <span class="text-red-600 font-semibold">${thongKe.NG || 0}</span></div>
+                <div><span class="font-medium text-gray-700">KDG:</span> <span class="text-gray-600 font-semibold">${thongKe.KDG || 0}</span></div>
+                <div><span class="font-medium text-gray-700">Test bền:</span> <span class="text-blue-600 font-semibold">${thongKe.Test_ben || 0}</span></div>
+              </div>
+            </div>
+          `;
+        }
+        
+        // Bảng chi tiết hạng mục TCKT
+        const tcktData = data.filter(item => item['Hạng mục kiểm tra \n(Index)'] || item['Hạng mục kiểm tra (Index)']);
+        if (tcktData.length > 0) {
+          html += `
+            <div class="bg-white border border-indigo-200 rounded-lg p-4">
+              <h5 class="font-semibold text-indigo-700 text-lg mb-3">Danh sách hạng mục kiểm tra</h5>
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-sm border-collapse">
+                  <thead>
+                    <tr class="bg-indigo-100">
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">Hạng mục</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">Tiêu chuẩn</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">Công chuẩn</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">Đánh giá</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">Ghi chú</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">M1</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">M2</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">M3</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">M4</th>
+                      <th class="px-3 py-2 text-left border border-indigo-300 font-semibold">M5</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
+          
+          tcktData.forEach((row, idx) => {
+            const danhGia = row['Đánh giá'] || '';
+            const danhGiaClass = danhGia === 'NG' ? 'text-red-600 font-semibold' : danhGia === 'OK' ? 'text-green-700' : danhGia === 'Test bền' ? 'text-blue-600' : 'text-gray-700';
+            html += `
+              <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-indigo-50'}">
+                <td class="px-3 py-2 border border-indigo-300">${row['Hạng mục kiểm tra \n(Index)'] || row['Hạng mục kiểm tra (Index)'] || 'N/A'}</td>
+                <td class="px-3 py-2 border border-indigo-300">${row['Tiêu chuẩn\n(Standard)'] || row['Tiêu chuẩn (Standard)'] || 'N/A'}</td>
+                <td class="px-3 py-2 border border-indigo-300">${row['Công chuẩn'] || 'N/A'}</td>
+                <td class="px-3 py-2 border border-indigo-300 ${danhGiaClass}">${danhGia || 'N/A'}</td>
+                <td class="px-3 py-2 border border-indigo-300">${row['Ghi chú'] || ''}</td>
+                <td class="px-3 py-2 border border-indigo-300">${formatValue(row['M1'])}</td>
+                <td class="px-3 py-2 border border-indigo-300">${formatValue(row['M2'])}</td>
+                <td class="px-3 py-2 border border-indigo-300">${formatValue(row['M3'])}</td>
+                <td class="px-3 py-2 border border-indigo-300">${formatValue(row['M4'])}</td>
+                <td class="px-3 py-2 border border-indigo-300">${formatValue(row['M5'])}</td>
+              </tr>
+            `;
+          });
+          
+          html += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        } else {
+          html += `<div class="bg-white border border-indigo-200 rounded-lg p-4 text-center text-gray-500">Không có dữ liệu hạng mục TCKT</div>`;
+        }
+        
+        html += `</div>`; // Đóng phần TCKT
+        
+        // ========== PHẦN 2: SHEET THÊM ==========
+        html += `<div class="bg-orange-50 border-2 border-orange-300 rounded-lg p-4">`;
+        html += `<h4 class="font-semibold text-orange-800 text-xl mb-4">📋 Sheet Thêm</h4>`;
+        
+        // Thống kê sheet Thêm
+        const thongKeThem = baoCao.thong_ke_them;
+        if (thongKeThem) {
+          html += `
+            <div class="bg-white border border-orange-200 rounded-lg p-4 mb-4">
+              <h5 class="font-semibold text-orange-700 text-lg mb-3">Thống kê</h5>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-3">
+                <div><span class="font-medium text-gray-700">Số hạng mục:</span> <span class="text-orange-700 font-semibold">${thongKeThem.so_hang_muc || 0}</span></div>
+                <div><span class="font-medium text-gray-700">Số cột mẫu:</span> <span class="text-orange-700 font-semibold">${thongKeThem.so_cot_mau || 0}</span></div>
+                <div><span class="font-medium text-gray-700">Hạng mục có công chuẩn:</span> <span class="text-orange-700 font-semibold">${thongKeThem.rows_co_cong_chuan || 0}</span></div>
+                <div><span class="font-medium text-gray-700">Hạng mục có dữ liệu mẫu:</span> <span class="text-orange-700 font-semibold">${thongKeThem.rows_co_du_lieu_mau || 0}</span></div>
+              </div>
+              ${thongKeThem.thong_ke_danh_gia ? `
+                <div class="mt-3">
+                  <h6 class="font-medium text-gray-700 mb-2">Thống kê đánh giá:</h6>
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                    ${Object.entries(thongKeThem.thong_ke_danh_gia).map(([key, value]) => {
+                      const colorClass = key === 'OK' ? 'text-green-700' : key === 'NG' ? 'text-red-600' : key === 'Test bền' ? 'text-blue-600' : 'text-gray-700';
+                      return `<div><span class="font-medium">${key}:</span> <span class="${colorClass} font-semibold">${value}</span></div>`;
+                    }).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `;
+        }
+        
+        // Bảng chi tiết hạng mục Thêm
+        if (rows && rows.length > 0) {
+          html += `
+            <div class="bg-white border border-orange-200 rounded-lg p-4">
+              <h5 class="font-semibold text-orange-700 text-lg mb-3">Danh sách hạng mục kiểm tra</h5>
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-sm border-collapse">
+                  <thead>
+                    <tr class="bg-orange-100">
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">STT</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">Hạng mục</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">Tiêu chuẩn</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">Công chuẩn</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">Đánh giá</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">Ghi chú</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">M1</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">M2</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">M3</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">M4</th>
+                      <th class="px-3 py-2 text-left border border-orange-300 font-semibold">M5</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+          `;
+          
+          rows.forEach((row, idx) => {
+            const danhGia = row['Đánh giá'] || '';
+            const danhGiaClass = danhGia === 'NG' ? 'text-red-600 font-semibold' : danhGia === 'OK' ? 'text-green-700' : danhGia === 'Test bền' ? 'text-blue-600' : 'text-gray-700';
+            html += `
+              <tr class="${idx % 2 === 0 ? 'bg-white' : 'bg-orange-50'}">
+                <td class="px-3 py-2 border border-orange-300">${row.STT || idx + 1}</td>
+                <td class="px-3 py-2 border border-orange-300">${row['Hạng mục kiểm tra (Index)'] || 'N/A'}</td>
+                <td class="px-3 py-2 border border-orange-300">${row['Tiêu chuẩn (Standard)'] || 'N/A'}</td>
+                <td class="px-3 py-2 border border-orange-300">${row['Công chuẩn'] || 'N/A'}</td>
+                <td class="px-3 py-2 border border-orange-300 ${danhGiaClass}">${danhGia || 'N/A'}</td>
+                <td class="px-3 py-2 border border-orange-300">${row['Ghi chú'] || ''}</td>
+                <td class="px-3 py-2 border border-orange-300">${formatValue(row['M1'])}</td>
+                <td class="px-3 py-2 border border-orange-300">${formatValue(row['M2'])}</td>
+                <td class="px-3 py-2 border border-orange-300">${formatValue(row['M3'])}</td>
+                <td class="px-3 py-2 border border-orange-300">${formatValue(row['M4'])}</td>
+                <td class="px-3 py-2 border border-orange-300">${formatValue(row['M5'])}</td>
+              </tr>
+            `;
+          });
+          
+          html += `
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          `;
+        } else {
+          html += `<div class="bg-white border border-orange-200 rounded-lg p-4 text-center text-gray-500">Không có dữ liệu hạng mục Thêm</div>`;
+        }
+        
+        html += `</div>`; // Đóng phần Thêm
+        
+        html += '</div>';
+        container.innerHTML = html;
+      } catch (err) {
+        console.error('Error parsing Baocaosohoa:', err);
+        container.innerHTML = '<div class="text-center py-8 text-red-500"><p class="text-sm">Lỗi xử lý dữ liệu báo cáo số hóa</p></div>';
+      }
+    }
+    
     async function doApprove(){
       const btn = document.getElementById('approve-do'); if (!CURRENT_ITEM_ID || !btn) return;
       const prev = btn.textContent; btn.disabled = true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang gửi...";
@@ -2043,6 +2597,15 @@
         b.addEventListener('click', (e)=>{ e.preventDefault(); closeModal(b.getAttribute('data-close')||''); });
       });
       document.addEventListener('keydown', (e)=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal.open').forEach(m=> closeModal(m.id)); } });
+      
+      // Tab switching for modal stats
+      document.querySelectorAll('.modal-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          e.preventDefault();
+          const tabId = tab.getAttribute('data-tab');
+          if (tabId) switchTab(tabId);
+        });
+      });
 
       const body = document.getElementById('list-body');
       body.addEventListener('click', (e)=>{
