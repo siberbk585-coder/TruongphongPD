@@ -203,6 +203,7 @@
           <label class="block text-sm text-gray-700 mb-1">Trạng thái</label>
           <select id="nctn-flt-status" class="w-full border border-rose-300 rounded-lg bg-rose-50 p-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white">
             <option value="Pending1" selected>Chờ phê duyệt</option>
+            <option value="Pending">Pending</option>
             <option value="Pending2">Trưởng nhóm Review</option>
             <option value="Approved">Done</option>
             <option value="TestBen">Test bền</option>
@@ -212,7 +213,7 @@
         </div>
         <div class="md:col-span-2">
           <label class="block text-sm text-gray-700 mb-1">Từ ngày</label>
-          <input id="nctn-flt-from" type="date" class="w-full border border-rose-300 rounded-lg bg-rose-50 p-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white" />
+          <input id="nctn-flt-from" type="date" value="2025-08-01" class="w-full border border-rose-300 rounded-lg bg-rose-50 p-2 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:bg-white" />
         </div>
         <div class="md:col-span-2">
           <label class="block text-sm text-gray-700 mb-1">Đến ngày</label>
@@ -1343,8 +1344,10 @@
         const v = String(val||'').trim().toLowerCase();
         const vNorm = v.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,'');
         if (!v) return 'Pending1';
-        // Chờ phê duyệt -> Pending1
-        if (['pending','cho phe duyet','chờ phê duyệt','cho_duyet','cho'].includes(v)) return 'Pending1';
+        // "Pending" (tiếng Anh) -> giữ riêng, KHÔNG thuộc Chờ phê duyệt
+        if (v === 'pending') return 'Pending';
+        // Chờ phê duyệt (tiếng Việt) -> Pending1
+        if (['cho phe duyet','chờ phê duyệt','cho_duyet','cho'].includes(v)) return 'Pending1';
         // Trưởng nhóm Review -> Pending2 - xử lý cả "Trưởng" và "Trường" (lỗi chính tả)
         if (['pending2','pending 2','cho phe duyet 2','chờ phê duyệt 2','cpd2',
              'truong nhom review','trưởng nhóm review','trường nhóm review',
@@ -1471,7 +1474,7 @@
       const today=new Date(); const today0=new Date(today.getFullYear(),today.getMonth(),today.getDate());
       body.innerHTML = pageItems.map(it=>{
         const due=parseDateFlexible(it.dueDate); let trClass=''; if(due){ const d0=new Date(due.getFullYear(),due.getMonth(),due.getDate()); if(d0.getTime()===today0.getTime()) trClass='bg-yellow-50'; else if(d0.getTime()<today0.getTime()) trClass='bg-red-50'; }
-        const statusBadge = ({ 'Pending1':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Chờ phê duyệt</span>', 'Pending2':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Trưởng nhóm Review</span>', 'Approved':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">Done</span>', 'ChangesRequested':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Đang sửa</span>', 'TestBen':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Test bền</span>', 'Rejected':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Từ chối</span>' })[String(it.status||'Pending1')] || String(it.status||'');
+        const statusBadge = ({ 'Pending1':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Chờ phê duyệt</span>', 'Pending':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">Pending</span>', 'Pending2':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Trưởng nhóm Review</span>', 'Approved':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">Done</span>', 'ChangesRequested':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Đang sửa</span>', 'TestBen':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Test bền</span>', 'Rejected':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Từ chối</span>' })[String(it.status||'Pending1')] || String(it.status||'');
         const canApprove = String(it.status||'')==='Pending1'; const canOther = ['Pending1','Pending2'].includes(String(it.status||''));
         const disApprove = canApprove? '' : 'opacity-50 pointer-events-none'; const disOther = canOther? '' : 'opacity-50 pointer-events-none';
         return `
@@ -2808,12 +2811,12 @@
           try{
             const fromEl=document.getElementById('nctn-flt-from');
             const toEl=document.getElementById('nctn-flt-to');
-            const now=new Date();
-            const s=new Date(now.getFullYear(), now.getMonth(), 1);
-            const e=new Date(now.getFullYear(), now.getMonth()+1, 0);
-            const toISO=(x)=>`${x.getFullYear()}-${String(x.getMonth()+1).padStart(2,'0')}-${String(x.getDate()).padStart(2,'0')}`;
-            if(fromEl) fromEl.value = toISO(s);
-            if(toEl) toEl.value = toISO(e);
+            const d=new Date();
+            const yy=d.getFullYear();
+            const mm=String(d.getMonth()+1).padStart(2,'0');
+            const dd=String(d.getDate()).padStart(2,'0');
+            if(fromEl) fromEl.value = '2025-08-01';
+            if(toEl) toEl.value = `${yy}-${mm}-${dd}`;
           }catch(_){ }
           try{ reloadNctn(); }catch(_){ }
         }
