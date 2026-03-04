@@ -1424,7 +1424,9 @@
         // Lọc bỏ các trạng thái "Doing" - không hiển thị
         const statusRawLower = String(item.statusRaw || '').toLowerCase().trim();
         const isDoing = ['doing','dang lam','đang làm','in progress','progress'].includes(statusRawLower);
-        return !isDoing;
+        // Lọc bỏ "Cancel" - đã hủy bỏ, không hiển thị
+        const isCancel = ['cancel','cancelled','hủy','huy','đã hủy','da huy'].includes(statusRawLower) || statusRawLower.includes('cancel');
+        return !isDoing && !isCancel;
       });
       try{ const f=document.getElementById('nctn-dbg-row'); if(f && normalizedRows[0]) f.value = JSON.stringify(normalizedRows[0], null, 2); }catch(_){ }
       const seen=new Set();
@@ -1475,7 +1477,7 @@
       body.innerHTML = pageItems.map(it=>{
         const due=parseDateFlexible(it.dueDate); let trClass=''; if(due){ const d0=new Date(due.getFullYear(),due.getMonth(),due.getDate()); if(d0.getTime()===today0.getTime()) trClass='bg-yellow-50'; else if(d0.getTime()<today0.getTime()) trClass='bg-red-50'; }
         const statusBadge = ({ 'Pending1':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Chờ phê duyệt</span>', 'Pending':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 border border-gray-200">Pending</span>', 'Pending2':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Trưởng nhóm Review</span>', 'Approved':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">Done</span>', 'ChangesRequested':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Đang sửa</span>', 'TestBen':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Test bền</span>', 'Rejected':'<span class="px-2 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">Từ chối</span>' })[String(it.status||'Pending1')] || String(it.status||'');
-        const canApprove = String(it.status||'')==='Pending1'; const canOther = ['Pending1','Pending2'].includes(String(it.status||''));
+        const canApprove = ['Pending1','Pending2'].includes(String(it.status||'')); const canOther = ['Pending1','Pending2'].includes(String(it.status||''));
         const disApprove = canApprove? '' : 'opacity-50 pointer-events-none'; const disOther = canOther? '' : 'opacity-50 pointer-events-none';
         return `
           <tr class="${trClass}">
