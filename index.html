@@ -115,6 +115,7 @@
     <section id="form-approve" class="bg-white p-4 md:p-6 rounded-xl shadow-md">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-blue-800">Danh sách báo cáo chờ duyệt</h2>
+        <button id="btn-approve-all-dqa" class="submit-btn px-4 py-2 text-white font-semibold">Duyệt tất cả</button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
@@ -192,6 +193,7 @@
     <section id="form-approve-nctn" class="bg-white p-4 md:p-6 rounded-xl shadow-md" style="display:none">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-xl font-semibold text-rose-800">Danh sách báo cáo NCTN chờ duyệt</h2>
+        <button id="btn-approve-all-nctn" class="submit-btn px-4 py-2 text-white font-semibold">Duyệt tất cả</button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-12 gap-3 mb-3">
@@ -559,6 +561,25 @@
       <div class="mt-3 flex items-center justify-end gap-2">
         <button data-close="modal-req" class="px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Hủy</button>
         <button id="req-do" class="px-4 py-2 rounded-full text-white font-semibold" style="background:#f59e0b">Gửi yêu cầu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Approve All -->
+  <div id="modal-approve-all" class="modal" aria-hidden="true">
+    <div id="modal-approve-all-box" class="w-full max-w-lg bg-white rounded-xl shadow-lg p-4">
+      <h3 id="modal-approve-all-title" class="text-lg font-semibold mb-2">Duyệt tất cả</h3>
+      <p class="text-sm text-gray-600 mb-3">Bạn có chắc chắn muốn duyệt <span id="approve-all-count">0</span> báo cáo <span id="approve-all-type-badge"></span> không?</p>
+      <div class="mb-3 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 bg-gray-50">
+        <ul id="approve-all-list" class="text-sm text-gray-700 space-y-1 list-disc list-inside"></ul>
+      </div>
+      <div class="mb-3">
+        <label class="block text-sm text-gray-700 mb-1">Bình luận (áp dụng cho tất cả)</label>
+        <textarea id="approve-all-comment" rows="2" class="w-full border border-blue-300 rounded-lg bg-slate-100 p-2 focus:outline-none focus:ring-2 focus:ring-blue-200 focus:bg-white" placeholder="Ghi chú chung (không bắt buộc)"></textarea>
+      </div>
+      <div class="flex items-center justify-end gap-2">
+        <button data-close="modal-approve-all" class="px-3 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">Hủy</button>
+        <button id="approve-all-do" class="submit-btn px-4 py-2 text-white font-semibold">Đồng ý</button>
       </div>
     </div>
   </div>
@@ -2505,6 +2526,115 @@
       finally{ btn.disabled=false; btn.textContent = prev||'Gửi yêu cầu'; }
     }
 
+    // ===== Duyệt tất cả
+    let APPROVE_ALL_ITEMS = [];
+    let APPROVE_ALL_CONTEXT = 'DQA';
+    function getApprovableItems(ctx){
+      const allowDQA = ['Pending','Pending2'];
+      const allowNctn = ['Pending1','Pending2'];
+      const list = ctx==='NCTN' ? NCTN_FILTERED : FILTERED;
+      const allow = ctx==='NCTN' ? allowNctn : allowDQA;
+      return list.filter(it=> allow.includes(String(it.status||'')));
+    }
+    function openApproveAllModal(ctx){
+      if (ctx!=='DQA' && ctx!=='NCTN') return;
+      APPROVE_ALL_CONTEXT = ctx;
+      APPROVE_ALL_ITEMS = getApprovableItems(ctx);
+      const countEl = document.getElementById('approve-all-count');
+      const listEl = document.getElementById('approve-all-list');
+      const commentEl = document.getElementById('approve-all-comment');
+      const titleEl = document.getElementById('modal-approve-all-title');
+      const badgeEl = document.getElementById('approve-all-type-badge');
+      const boxEl = document.getElementById('modal-approve-all-box');
+      if (countEl) countEl.textContent = APPROVE_ALL_ITEMS.length;
+      if (listEl) listEl.innerHTML = APPROVE_ALL_ITEMS.map(it=> `<li>${escapeHtml(it.code||'')} — ${escapeHtml(it.title||'')}</li>`).join('') || '<li class="text-gray-500">Không có báo cáo nào</li>';
+      if (commentEl) commentEl.value = '';
+      if (ctx==='DQA'){
+        if (titleEl) titleEl.textContent = 'Duyệt tất cả báo cáo DQA';
+        if (titleEl) titleEl.className = 'text-lg font-semibold text-blue-800 mb-2';
+        if (badgeEl) badgeEl.textContent = '(DQA)';
+        if (badgeEl) badgeEl.className = 'font-semibold text-blue-700';
+        if (boxEl){ boxEl.classList.remove('ring-2','ring-rose-300'); boxEl.classList.add('ring-2','ring-blue-300'); }
+      } else {
+        if (titleEl) titleEl.textContent = 'Duyệt tất cả báo cáo NCTN';
+        if (titleEl) titleEl.className = 'text-lg font-semibold text-rose-800 mb-2';
+        if (badgeEl) badgeEl.textContent = '(NCTN)';
+        if (badgeEl) badgeEl.className = 'font-semibold text-rose-700';
+        if (boxEl){ boxEl.classList.remove('ring-2','ring-blue-300'); boxEl.classList.add('ring-2','ring-rose-300'); }
+      }
+      if (APPROVE_ALL_ITEMS.length===0){ showToast('Không có báo cáo nào đủ điều kiện để duyệt.','error'); return; }
+      openModal('modal-approve-all');
+    }
+    function itemBelongsToContext(it, ctx){
+      if (ctx==='DQA') return ALL_ITEMS.some(x=> String(x.id)===String(it.id));
+      if (ctx==='NCTN') return NCTN_ITEMS.some(x=> String(x.id)===String(it.id));
+      return false;
+    }
+    async function approveSingleItem(it, comment){
+      if (!itemBelongsToContext(it, APPROVE_ALL_CONTEXT)){
+        console.error('Lỗi: Báo cáo không thuộc đúng loại. Bỏ qua.', it?.id);
+        return { ok: false, qaCode: '' };
+      }
+      function getFromRawData(rawData, ...keys) {
+        if (!rawData || typeof rawData !== 'object') return '';
+        for (const key of keys) {
+          if (rawData[key] !== undefined && rawData[key] !== null && rawData[key] !== '') return String(rawData[key]);
+        }
+        const lowerMap = {};
+        try { Object.keys(rawData).forEach(k => { lowerMap[String(k).toLowerCase()] = rawData[k]; });
+          for (const key of keys) {
+            const v = lowerMap[String(key).toLowerCase()];
+            if (v !== undefined && v !== null && v !== '') return String(v);
+          }
+        } catch(_) {}
+        return '';
+      }
+      const rawData = it?.rawData || {};
+      const submitDate = it?.submitDate || getFromRawData(rawData, 'Ngày hoàn thành thực tế', 'ngày hoàn thành thực tế') || '';
+      const maTacVu = it?.code || getFromRawData(rawData, 'Mã tác vụ', 'mã tác vụ', 'Mat tac vu') || '';
+      const tieuDe = it?.title || getFromRawData(rawData, 'Tên tác vụ', 'tên tác vụ', 'Ten tac vu') || '';
+      const emailNgYeuCau = it?.emailNgYeuCau || getFromRawData(rawData, 'Email người yêu cầu', 'email người yêu cầu', 'Email nguoi yeu cau') || '';
+      const emailNgNhanTacVu = it?.emailNgNhanTacVu || it?.reporterEmail || getFromRawData(rawData, 'Email người nhận tác vụ', 'email người nhận tác vụ', 'Email nguoi nhan tac vu') || '';
+      const linkBC = it?.reportUrl || getFromRawData(rawData, 'LinkBC', 'linkbc', 'Link BC', 'link bc') || '';
+      const maBaoCao = it?.maBaoCao || it?.conclusion || getFromRawData(rawData, 'Mã báo cáo', 'mã báo cáo', 'Ma bao cao', 'mabaocao') || '';
+      const now = new Date();
+      const sentDate = `${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+      const qaCode = generateQaCode(APPROVE_ALL_CONTEXT);
+      const p = new URLSearchParams({ action:'report_approve', id:String(it.id), comment: comment||'', qa_code: qaCode, submitDate, sentDate, ma_tac_vu: maTacVu, tieu_de: tieuDe, email_nguoi_yeu_cau: emailNgYeuCau, email_nguoi_nhan_tac_vu: emailNgNhanTacVu, linkbc: linkBC, ma_bao_cao: maBaoCao, _ts: Date.now().toString() });
+      const ACTION_URL = APPROVE_ALL_CONTEXT==='NCTN' ? NCTN_FORM_ACTION_URL : FORM_ACTION_URL;
+      async function tryPost(url){ try{ const r=await fetch(url, { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+      async function tryPostNoCors(url){ try{ await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:p.toString() }); return { ok:true, raw:'' }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+      async function tryGet(url){ try{ const r=await fetch(`${url}?${p.toString()}`, { method:'GET' }); const t=await r.text(); return { ok:r.ok, raw:t }; }catch(err){ return { ok:false, raw:String(err||'') }; } }
+      let r = await tryPostNoCors(ACTION_URL);
+      if (!r.ok) r = await tryPost(ACTION_URL);
+      if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(ACTION_URL);
+      if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryPost(ACTION_URL.replace('/webhook-test/','/webhook/'));
+      if (!r.ok || /could not be started/i.test(r.raw||'')) r = await tryGet(ACTION_URL.replace('/webhook-test/','/webhook/'));
+      return { ok: r.ok, qaCode };
+    }
+    async function doApproveAll(){
+      if (!APPROVE_ALL_ITEMS.length) return;
+      const btn = document.getElementById('approve-all-do'); if (!btn) return;
+      const prev = btn.textContent; btn.disabled = true; btn.innerHTML = "<span class='spinner mr-2'></span>Đang gửi...";
+      const comment = (document.getElementById('approve-all-comment')?.value||'').trim();
+      let okCount = 0; let failCount = 0;
+      for (let i = 0; i < APPROVE_ALL_ITEMS.length; i++) {
+        btn.innerHTML = `<span class='spinner mr-2'></span>Đang gửi ${i+1}/${APPROVE_ALL_ITEMS.length}...`;
+        const it = APPROVE_ALL_ITEMS[i];
+        const res = await approveSingleItem(it, comment);
+        if (res.ok) okCount++; else failCount++;
+      }
+      closeModal('modal-approve-all');
+      if (okCount) showToast(`Đã duyệt ${okCount} báo cáo.${failCount ? ' Thất bại: '+failCount : ''}`,'success');
+      if (failCount && !okCount) showToast('Duyệt thất bại.','error');
+      try {
+        if (APPROVE_ALL_CONTEXT==='NCTN'){ await reloadNctnDataSilent(); } else { await reloadDataSilent(); }
+      } catch(reloadErr) {
+        if (APPROVE_ALL_CONTEXT==='NCTN'){ NCTN_FILTERED = applyNctnFilters(NCTN_ITEMS); renderNctnTable(); } else { FILTERED = applyFilters(ALL_ITEMS); renderTable(); }
+      }
+      btn.disabled = false; btn.textContent = prev||'Đồng ý';
+    }
+
     // ===== Form 4 =====
     let F4_SELECTED = [];
     function renderForm4(){ /* Không còn dựng từ mock; giữ chỗ nếu cần mở rộng thêm */ }
@@ -2699,6 +2829,9 @@
       document.getElementById('approve-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doApprove(); });
       document.getElementById('reject-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doReject(); });
       document.getElementById('req-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doRequest(); });
+      document.getElementById('approve-all-do')?.addEventListener('click', (e)=>{ e.preventDefault(); doApproveAll(); });
+      document.getElementById('btn-approve-all-dqa')?.addEventListener('click', (e)=>{ e.preventDefault(); CURRENT_CONTEXT='DQA'; openApproveAllModal('DQA'); });
+      document.getElementById('btn-approve-all-nctn')?.addEventListener('click', (e)=>{ e.preventDefault(); CURRENT_CONTEXT='NCTN'; openApproveAllModal('NCTN'); });
 
       // Phê duyệt Form events
       document.getElementById('pdform-btn-search')?.addEventListener('click', async (e)=>{ e.preventDefault(); await reloadPdForm(); });
