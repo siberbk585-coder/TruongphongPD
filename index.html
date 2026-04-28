@@ -1405,6 +1405,8 @@
         const wishDate=getFrom(lx,'hạn mong muốn của các bên','hạn mong muốn của các bên','hanmongmuoncua cac ben','Hạn mong muốn của các bên'); 
         // Ngày hoàn thành thực tế dùng làm dueDate
         const dueDate=getFrom(lx,'ngày hoàn thành thực tế','ngày hoàn thành thực tế','ngayhoanthucthuc','Ngày hoàn thành thực tế'); 
+        // Tác vụ đánh giá: chỉ nhận dòng có đánh dấu "x"
+        const tacVuDanhGia=getFrom(lx,'tác vụ đánh giá','tac vu danh gia','tacvudanhgia','Tác vụ đánh giá');
         // Kết quả = Trạng thái
         const statusRaw=getFrom(lx,'kết quả','ket qua','ketqua','Kết quả'); 
         const status=normalizeNctnStatus(statusRaw); 
@@ -1439,6 +1441,7 @@
           emailNgYeuCau: emailNgYeuCau||'', // Lưu trực tiếp vào object
           emailNgNhanTacVu: emailNgNhanTacVu||'', // Lưu trực tiếp vào object
           maBaoCao: maBaoCao||'', // Lưu trực tiếp Mã báo cáo vào object
+          tacVuDanhGia: tacVuDanhGia||'',
           rawData: x // Lưu toàn bộ dữ liệu gốc
         }; 
       }).filter(item => {
@@ -1447,7 +1450,9 @@
         const isDoing = ['doing','dang lam','đang làm','in progress','progress'].includes(statusRawLower);
         // Lọc bỏ "Cancel" - đã hủy bỏ, không hiển thị
         const isCancel = ['cancel','cancelled','hủy','huy','đã hủy','da huy'].includes(statusRawLower) || statusRawLower.includes('cancel');
-        return !isDoing && !isCancel;
+        // Không có dấu "x" ở "Tác vụ đánh giá" thì không vào phần phê duyệt
+        const hasDanhGiaMarkX = String(item.tacVuDanhGia || '').trim().toLowerCase() === 'x';
+        return !isDoing && !isCancel && hasDanhGiaMarkX;
       });
       try{ const f=document.getElementById('nctn-dbg-row'); if(f && normalizedRows[0]) f.value = JSON.stringify(normalizedRows[0], null, 2); }catch(_){ }
       const seen=new Set();
